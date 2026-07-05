@@ -1,0 +1,11 @@
+---
+description: Projeto somente em pasta local, nunca no OneDrive
+alwaysApply: true
+---
+
+# Pasta local obrigatoria
+
+- Workspace do projeto: `C:\dev\star_frete`
+- NUNCA gravar, copiar ou sugerir caminhos em `OneDrive` (ex.: `C:\Users\Usuário\OneDrive\...`)
+- Todos os arquivos, comandos de terminal e referencias de path devem usar `C:\dev\star_frete`
+- Se o usuario estiver em pasta do OneDrive, avisar para abrir `C:\dev\star_frete` no Cursor
