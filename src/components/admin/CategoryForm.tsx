@@ -14,6 +14,7 @@ import {
   FormField,
   FormTextarea,
 } from "@/components/ui/FormField";
+import { adminButtonPrimary } from "@/lib/ui/admin-buttons";
 
 interface CategoryFormProps {
   category?: {
@@ -87,7 +88,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
         <button
           type="submit"
           disabled={pending}
-          className="bg-primary hover:bg-primary-hover rounded-full px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+          className={adminButtonPrimary}
         >
           {pending
             ? "Salvando..."

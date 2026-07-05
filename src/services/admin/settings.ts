@@ -1,19 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import {
+  isMissingSecondaryColumnsError,
+  STORE_SETTINGS_BASE_SELECT,
+  STORE_SETTINGS_FULL_SELECT,
+  type StoreSettingsRow,
+} from "@/lib/supabase/store-settings-shared";
 
-export interface AdminStoreSettingsRow {
-  id: string;
-  store_name: string;
-  whatsapp_number: string;
-  whatsapp_message_template: string | null;
-  instagram_url: string | null;
-  contact_email: string | null;
-  address_text: string | null;
-  delivery_text: string | null;
-  warranty_text: string | null;
-  exchange_policy: string | null;
-  business_hours: string | null;
-}
+export type AdminStoreSettingsRow = StoreSettingsRow & { id: string };
 
 export async function getAdminStoreSettings(): Promise<AdminStoreSettingsRow | null> {
   if (!isSupabaseConfigured()) {
@@ -21,13 +15,19 @@ export async function getAdminStoreSettings(): Promise<AdminStoreSettingsRow | n
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("store_settings")
-    .select(
-      "id, store_name, whatsapp_number, whatsapp_message_template, instagram_url, contact_email, address_text, delivery_text, warranty_text, exchange_policy, business_hours",
-    )
+    .select(`id, ${STORE_SETTINGS_FULL_SELECT}`)
     .limit(1)
     .maybeSingle();
+
+  if (isMissingSecondaryColumnsError(error?.message)) {
+    ({ data, error } = await supabase
+      .from("store_settings")
+      .select(`id, ${STORE_SETTINGS_BASE_SELECT}`)
+      .limit(1)
+      .maybeSingle());
+  }
 
   if (error) {
     console.error("getAdminStoreSettings:", error.message);

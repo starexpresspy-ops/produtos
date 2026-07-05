@@ -24,6 +24,7 @@ import { DEMO_CATEGORIES } from "@/lib/data/categories";
 import { DEMO_BRANDS } from "@/lib/data/brands";
 import { DEMO_PRODUCTS } from "@/lib/data/products";
 import { DEMO_STORE_SETTINGS } from "@/lib/data/store-settings";
+import { getEnvStoreSettings } from "@/lib/supabase/store-settings-shared";
 
 export type { ProductFilters };
 
@@ -115,6 +116,8 @@ export const getStoreSettings = cache(async (): Promise<StoreSettings> => {
   if (isSupabaseConfigured()) {
     const settings = await getCachedStoreSettings();
     if (settings) return settings;
+    const fromEnv = getEnvStoreSettings();
+    if (fromEnv.whatsappNumber) return fromEnv;
   }
   return DEMO_STORE_SETTINGS;
 });

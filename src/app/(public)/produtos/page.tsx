@@ -7,6 +7,7 @@ import {
   getProducts,
   getStoreSettings,
 } from "@/services/catalog";
+import { getWhatsappContacts } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Produtos",
@@ -30,6 +31,7 @@ export default async function ProductsPage({
   ]);
 
   const settings = await getStoreSettings();
+  const whatsappContacts = getWhatsappContacts(settings);
 
   return (
     <Container className="py-10">
@@ -46,7 +48,7 @@ export default async function ProductsPage({
         products={products}
         categories={categories}
         brands={brands}
-        whatsappNumber={settings.whatsappNumber}
+        whatsappContacts={whatsappContacts}
         initialSearch={busca ?? ""}
       />
     </Container>

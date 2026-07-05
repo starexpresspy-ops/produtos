@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { revalidateStorefront } from "@/lib/catalog/revalidate";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { storeSettingsFormSchema } from "@/lib/validations/store-settings";
+import { isMissingSecondaryColumnsError } from "@/lib/supabase/store-settings-shared";
 import { STORE } from "@/constants/store";
 import type { ActionResult } from "@/types/actions";
 
@@ -24,6 +25,8 @@ export async function saveStoreSettings(
   const parsed = storeSettingsFormSchema.safeParse({
     storeName: formData.get("storeName"),
     whatsappNumber: formData.get("whatsappNumber"),
+    whatsappNumberSecondary: formData.get("whatsappNumberSecondary"),
+    whatsappSecondaryLabel: formData.get("whatsappSecondaryLabel"),
     whatsappMessageTemplate: formData.get("whatsappMessageTemplate"),
     instagramUrl: formData.get("instagramUrl"),
     contactEmail: formData.get("contactEmail"),
@@ -39,7 +42,7 @@ export async function saveStoreSettings(
   }
 
   const supabase = await createClient();
-  const payload = {
+  const basePayload = {
     store_name: parsed.data.storeName,
     whatsapp_number: parsed.data.whatsappNumber.replace(/\D/g, ""),
     whatsapp_message_template: parsed.data.whatsappMessageTemplate,
@@ -51,6 +54,11 @@ export async function saveStoreSettings(
     exchange_policy: parsed.data.exchangePolicy,
     business_hours: parsed.data.businessHours,
   };
+  const fullPayload = {
+    ...basePayload,
+    whatsapp_number_secondary: parsed.data.whatsappNumberSecondary,
+    whatsapp_secondary_label: parsed.data.whatsappSecondaryLabel,
+  };
 
   const { data: existing } = await supabase
     .from("store_settings")
@@ -58,17 +66,19 @@ export async function saveStoreSettings(
     .limit(1)
     .maybeSingle();
 
-  if (existing?.id) {
-    const { error } = await supabase
-      .from("store_settings")
-      .update(payload)
-      .eq("id", existing.id);
-
-    if (error) return { error: error.message };
-  } else {
-    const { error } = await supabase.from("store_settings").insert(payload);
-    if (error) return { error: error.message };
+  async function persist(payload: Record<string, unknown>) {
+    if (existing?.id) {
+      return supabase.from("store_settings").update(payload).eq("id", existing.id);
+    }
+    return supabase.from("store_settings").insert(payload);
   }
+
+  let { error } = await persist(fullPayload);
+  if (error && isMissingSecondaryColumnsError(error.message)) {
+    ({ error } = await persist(basePayload));
+  }
+
+  if (error) return { error: error.message };
 
   revalidatePath("/admin/configuracoes");
   revalidateStorefront();
@@ -79,6 +89,8 @@ export async function getDefaultStoreSettingsForForm() {
   return {
     storeName: STORE.name,
     whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "",
+    whatsappNumberSecondary: "",
+    whatsappSecondaryLabel: "",
     whatsappMessageTemplate: "",
     instagramUrl: "",
     contactEmail: "",

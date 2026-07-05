@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/public/Logo";
-import { WhatsappButton } from "@/components/shared/WhatsappButton";
+import { WhatsappButtons } from "@/components/shared/WhatsappButtons";
+import type { WhatsappContact } from "@/lib/whatsapp";
 
 export function Header({
   storeName,
-  whatsappNumber,
+  whatsappContacts,
 }: {
   storeName: string;
-  whatsappNumber: string;
+  whatsappContacts: WhatsappContact[];
 }) {
   return (
     <header className="border-border bg-surface sticky top-0 z-20 border-b">
@@ -16,7 +17,7 @@ export function Header({
         <Link href="/" aria-label={storeName} className="shrink-0">
           <Logo />
         </Link>
-        <div className="flex items-center gap-4 md:gap-6">
+        <div className="flex items-center gap-3 md:gap-5">
           <nav className="hidden items-center gap-5 text-sm font-medium md:flex">
             <Link href="/produtos" className="hover:text-primary transition-colors">
               Produtos
@@ -28,10 +29,10 @@ export function Header({
               Contato
             </Link>
           </nav>
-          <WhatsappButton
-            phone={whatsappNumber}
+          <WhatsappButtons
+            contacts={whatsappContacts}
             message="Ola! Quero atendimento da Star Express."
-            label="WhatsApp"
+            layout="row"
           />
         </div>
       </Container>

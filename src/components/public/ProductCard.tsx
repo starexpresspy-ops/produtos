@@ -3,19 +3,21 @@ import Image from "next/image";
 import type { ProductWithRelations } from "@/types";
 import { PriceDisplay } from "@/components/shared/PriceDisplay";
 import { StatusBadge } from "@/components/shared/StatusBadge";
-import { WhatsappButton } from "@/components/shared/WhatsappButton";
+import { WhatsappButtons } from "@/components/shared/WhatsappButtons";
 import { buildProductMessage } from "@/lib/whatsapp";
 import { SITE_URL } from "@/constants/store";
+import type { WhatsappContact } from "@/lib/whatsapp";
 
 export function ProductCard({
   product,
-  whatsappNumber,
+  whatsappContacts,
 }: {
   product: ProductWithRelations;
-  whatsappNumber: string;
+  whatsappContacts: WhatsappContact[];
 }) {
   const cover = product.images.find((img) => img.isCover) ?? product.images[0];
   const productUrl = `${SITE_URL}/produto/${product.slug}`;
+
   return (
     <article className="border-border bg-surface rounded-[var(--radius-card)] border p-4">
       <Link href={`/produto/${product.slug}`} className="block">
@@ -35,11 +37,11 @@ export function ProductCard({
         <StatusBadge status={product.stockStatus} />
       </div>
       <div className="mt-4">
-        <WhatsappButton
-          phone={whatsappNumber}
+        <WhatsappButtons
+          contacts={whatsappContacts}
           message={buildProductMessage({ product, productUrl })}
-          label="Pedir no WhatsApp"
           fullWidth
+          layout="column"
         />
       </div>
     </article>

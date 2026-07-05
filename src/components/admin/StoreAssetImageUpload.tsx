@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import Image from "next/image";
 import type { ActionResult } from "@/types/actions";
 import { STORE_ASSET_UPLOAD_HINT } from "@/lib/supabase/store-assets";
+import { adminButtonSecondary } from "@/lib/ui/admin-buttons";
 
 interface StoreAssetImageUploadProps {
   title: string;
@@ -100,7 +101,7 @@ export function StoreAssetImageUpload({
         <button
           type="submit"
           disabled={uploadPending}
-          className="border-border hover:bg-background rounded-full border px-6 py-2.5 text-sm font-semibold disabled:opacity-60"
+          className={adminButtonSecondary}
         >
           {uploadPending ? "Enviando..." : "Enviar imagem"}
         </button>

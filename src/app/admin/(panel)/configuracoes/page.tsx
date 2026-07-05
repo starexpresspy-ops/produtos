@@ -11,6 +11,8 @@ export default async function AdminSettingsPage() {
     ? {
         storeName: row.store_name,
         whatsappNumber: row.whatsapp_number,
+        whatsappNumberSecondary: row.whatsapp_number_secondary ?? "",
+        whatsappSecondaryLabel: row.whatsapp_secondary_label ?? "",
         whatsappMessageTemplate: row.whatsapp_message_template ?? "",
         instagramUrl: row.instagram_url ?? "",
         contactEmail: row.contact_email ?? "",

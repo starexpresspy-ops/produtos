@@ -9,6 +9,7 @@ import {
   getProducts,
   getStoreSettings,
 } from "@/services/catalog";
+import { getWhatsappContacts } from "@/lib/whatsapp";
 
 export const revalidate = 60;
 
@@ -45,6 +46,7 @@ export default async function CategoryPage({
   ]);
 
   const settings = await getStoreSettings();
+  const whatsappContacts = getWhatsappContacts(settings);
 
   return (
     <Container className="py-10">
@@ -61,7 +63,7 @@ export default async function CategoryPage({
         products={products}
         categories={categories}
         brands={brands}
-        whatsappNumber={settings.whatsappNumber}
+        whatsappContacts={whatsappContacts}
         initialCategorySlug={category.slug}
       />
     </Container>

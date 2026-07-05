@@ -1,12 +1,13 @@
 import type { ProductWithRelations } from "@/types";
+import type { WhatsappContact } from "@/lib/whatsapp";
 import { ProductCard } from "@/components/public/ProductCard";
 
 export function ProductGrid({
   products,
-  whatsappNumber,
+  whatsappContacts,
 }: {
   products: ProductWithRelations[];
-  whatsappNumber: string;
+  whatsappContacts: WhatsappContact[];
 }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -14,7 +15,7 @@ export function ProductGrid({
         <ProductCard
           key={product.id}
           product={product}
-          whatsappNumber={whatsappNumber}
+          whatsappContacts={whatsappContacts}
         />
       ))}
     </div>

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { signInAdmin } from "@/actions/auth";
+import { adminButtonPrimaryLg } from "@/lib/ui/admin-buttons";
 
 type LoginState = { error?: string };
 
@@ -46,7 +47,7 @@ export function AdminLoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="bg-primary hover:bg-primary-hover w-full rounded-full px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
+        className={`${adminButtonPrimaryLg} w-full`}
       >
         {pending ? "Entrando..." : "Entrar"}
       </button>

@@ -7,13 +7,14 @@ import {
 } from "@/actions/admin/products";
 import type { ActionResult } from "@/types/actions";
 import { ProductImageManager } from "@/components/admin/ProductImageManager";
+import { ResponsibilityNotice } from "@/components/shared/ResponsibilityNotice";
 import {
   FormCheckbox,
   FormField,
   FormSelect,
   FormTextarea,
 } from "@/components/ui/FormField";
-import { ResponsibilityNotice } from "@/components/shared/ResponsibilityNotice";
+import { adminButtonPrimary, adminButtonPrimaryLg } from "@/lib/ui/admin-buttons";
 
 interface CategoryOption {
   id: string;
@@ -231,7 +232,7 @@ export function ProductForm({
         <button
           type="submit"
           disabled={savePending}
-          className="bg-primary hover:bg-primary-hover rounded-full px-8 py-3 text-sm font-semibold text-white disabled:opacity-60"
+          className={adminButtonPrimaryLg}
         >
           {savePending ? "Salvando..." : product ? "Salvar alteracoes" : "Cadastrar produto"}
         </button>

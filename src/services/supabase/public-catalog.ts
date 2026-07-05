@@ -1,5 +1,12 @@
 import { createPublicClient } from "@/lib/supabase/public";
 import { getPublicImageUrl } from "@/lib/supabase/mappers";
+import {
+  isMissingSecondaryColumnsError,
+  mapStoreSettingsRow,
+  STORE_SETTINGS_BASE_SELECT,
+  STORE_SETTINGS_FULL_SELECT,
+  type StoreSettingsRow,
+} from "@/lib/supabase/store-settings-shared";
 import { mapDbProduct } from "@/lib/supabase/product-mappers";
 import type {
   Brand,
@@ -81,38 +88,29 @@ function mapBrandRow(b: {
 
 export async function fetchStoreSettings(): Promise<StoreSettings | null> {
   const supabase = createPublicClient();
-  const { data } = await supabase
+
+  let { data, error } = await supabase
     .from("store_settings")
-    .select(
-      "store_name, whatsapp_number, whatsapp_message_template, instagram_url, contact_email, address_text, delivery_text, warranty_text, exchange_policy, business_hours",
-    )
+    .select(STORE_SETTINGS_FULL_SELECT)
     .limit(1)
-    .single();
+    .maybeSingle();
+
+  if (isMissingSecondaryColumnsError(error?.message)) {
+    ({ data, error } = await supabase
+      .from("store_settings")
+      .select(STORE_SETTINGS_BASE_SELECT)
+      .limit(1)
+      .maybeSingle());
+  }
+
+  if (error) {
+    console.error("fetchStoreSettings:", error.message);
+    return null;
+  }
+
   if (!data) return null;
-  const row = data as {
-    store_name: string;
-    whatsapp_number: string;
-    whatsapp_message_template: string | null;
-    instagram_url: string | null;
-    contact_email: string | null;
-    address_text: string | null;
-    delivery_text: string | null;
-    warranty_text: string | null;
-    exchange_policy: string | null;
-    business_hours: string | null;
-  };
-  return {
-    storeName: row.store_name,
-    whatsappNumber: row.whatsapp_number,
-    whatsappMessageTemplate: row.whatsapp_message_template ?? undefined,
-    instagramUrl: row.instagram_url ?? undefined,
-    contactEmail: row.contact_email ?? undefined,
-    addressText: row.address_text ?? undefined,
-    deliveryText: row.delivery_text ?? undefined,
-    warrantyText: row.warranty_text ?? undefined,
-    exchangePolicy: row.exchange_policy ?? undefined,
-    businessHours: row.business_hours ?? undefined,
-  };
+
+  return mapStoreSettingsRow(data as StoreSettingsRow);
 }
 
 export async function fetchCategories(): Promise<Category[]> {

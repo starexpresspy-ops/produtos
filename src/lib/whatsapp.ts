@@ -1,5 +1,10 @@
 import { formatCurrency } from "@/lib/formatters/currency";
-import type { ProductWithRelations } from "@/types";
+import type { ProductWithRelations, StoreSettings } from "@/types";
+
+export interface WhatsappContact {
+  phone: string;
+  label: string;
+}
 
 export function sanitizePhone(phone: string) {
   return phone.replace(/\D/g, "");
@@ -18,6 +23,30 @@ export function getWhatsappPhone(settingsPhone?: string) {
   if (fromEnv) return sanitizePhone(fromEnv);
 
   return "";
+}
+
+export function getWhatsappContacts(
+  settings: Pick<
+    StoreSettings,
+    "whatsappNumber" | "whatsappNumberSecondary" | "whatsappSecondaryLabel"
+  >,
+): WhatsappContact[] {
+  const contacts: WhatsappContact[] = [];
+
+  const primary = getWhatsappPhone(settings.whatsappNumber);
+  if (primary) {
+    contacts.push({ phone: primary, label: "WhatsApp" });
+  }
+
+  const secondary = settings.whatsappNumberSecondary?.trim();
+  if (secondary) {
+    contacts.push({
+      phone: sanitizePhone(secondary),
+      label: settings.whatsappSecondaryLabel?.trim() || "WhatsApp 2",
+    });
+  }
+
+  return contacts;
 }
 
 export function buildProductMessage({

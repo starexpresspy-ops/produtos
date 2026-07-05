@@ -6,7 +6,9 @@
   --foreground: #0c1b40;
   --muted: #5d6884;
   --primary: #102a63;
-  --primary-hover: #0e2557;
+  --primary-hover: #0c1f4a;
+  --accent: #dc1f26;
+  --accent-hover: #b8181f;
   --gold: #d4a021;
   --danger: #c23535;
   --border: #dbe1ef;
@@ -22,6 +24,8 @@
   --color-muted: var(--muted);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-gold: var(--gold);
   --color-danger: var(--danger);
   --color-border: var(--border);
@@ -47,6 +51,6 @@ a {
   text-decoration: none;
 }
 
-a:not([class*="bg-primary"]) {
+a:not([class*="bg-primary"]):not([class*="bg-accent"]):not([class*="admin-btn"]) {
   color: inherit;
 }

@@ -67,6 +67,8 @@ export interface ProductWithRelations extends Product {
 export interface StoreSettings {
   storeName: string;
   whatsappNumber: string;
+  whatsappNumberSecondary?: string;
+  whatsappSecondaryLabel?: string;
   whatsappMessageTemplate?: string;
   instagramUrl?: string;
   contactEmail?: string;

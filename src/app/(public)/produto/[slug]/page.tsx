@@ -9,14 +9,14 @@ import { ProductGallery } from "@/components/public/ProductGallery";
 import { ProductGrid } from "@/components/public/ProductGrid";
 import { PriceDisplay } from "@/components/shared/PriceDisplay";
 import { StatusBadge, FeaturedBadge } from "@/components/shared/StatusBadge";
-import { WhatsappButton } from "@/components/shared/WhatsappButton";
+import { WhatsappButtons } from "@/components/shared/WhatsappButtons";
 import { ShareButton } from "@/components/shared/ShareButton";
 import {
   getProductBySlug,
   getRelatedProducts,
   getStoreSettings,
 } from "@/services/catalog";
-import { buildProductMessage, getWhatsappPhone } from "@/lib/whatsapp";
+import { buildProductMessage, getWhatsappContacts } from "@/lib/whatsapp";
 import { SITE_URL } from "@/constants/store";
 
 const CONDITION_LABELS: Record<ProductCondition, string> = {
@@ -64,6 +64,7 @@ export default async function ProductPage({
   const productUrl = `${SITE_URL}/produto/${product.slug}`;
   const isAvailable = product.stockStatus === "available";
   const message = buildProductMessage({ product, productUrl });
+  const whatsappContacts = getWhatsappContacts(settings);
 
   return (
     <Container className="py-8">
@@ -122,15 +123,18 @@ export default async function ProductPage({
             size="lg"
           />
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <WhatsappButton
-              phone={getWhatsappPhone(settings.whatsappNumber)}
+          <div className="mt-6 space-y-3">
+            <WhatsappButtons
+              contacts={whatsappContacts.map((contact) => ({
+                ...contact,
+                label: isAvailable
+                  ? `Comprar — ${contact.label}`
+                  : `Consultar — ${contact.label}`,
+              }))}
               message={message}
-              label={
-                isAvailable ? "Comprar no WhatsApp" : "Consultar pelo WhatsApp"
-              }
               size="lg"
               fullWidth
+              layout="column"
             />
             <ShareButton
               title={product.name}
@@ -172,10 +176,7 @@ export default async function ProductPage({
       {related.length > 0 ? (
         <section className="mt-16">
           <SectionHeading title="Produtos relacionados" />
-          <ProductGrid
-            products={related}
-            whatsappNumber={settings.whatsappNumber}
-          />
+          <ProductGrid products={related} whatsappContacts={whatsappContacts} />
         </section>
       ) : null}
     </Container>

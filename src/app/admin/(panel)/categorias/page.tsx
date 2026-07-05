@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { adminButtonPrimary } from "@/lib/ui/admin-buttons";
 import { getAdminCategoriesList } from "@/services/admin/categories";
 import { importCategoriesFromCsv } from "@/actions/admin/categories";
 import { CsvImporter } from "@/components/admin/CsvImporter";
@@ -18,7 +19,7 @@ export default async function AdminCategoriesPage() {
         </div>
         <Link
           href="/admin/categorias/novo"
-          className="bg-primary hover:bg-primary-hover inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white"
+          className={adminButtonPrimary}
         >
           <Plus className="h-4 w-4" />
           Nova categoria

@@ -1,13 +1,15 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   FolderTree,
   LayoutDashboard,
   Package,
   Settings,
-  Store,
   Tag,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { adminNavActive, adminNavItem } from "@/lib/ui/admin-buttons";
+import { STORE } from "@/constants/store";
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -24,14 +26,14 @@ interface AdminSidebarProps {
 export function AdminSidebar({ pathname }: AdminSidebarProps) {
   return (
     <aside className="border-border bg-surface hidden w-64 shrink-0 border-r md:block">
-      <div className="flex h-16 items-center gap-2 border-b px-5">
-        <span className="bg-primary flex h-9 w-9 items-center justify-center rounded-lg text-white">
-          <Store className="h-5 w-5" />
-        </span>
-        <div>
-          <p className="text-foreground text-sm font-bold">Painel Lojista</p>
-          <p className="text-muted text-xs">Star Express PY</p>
-        </div>
+      <div className="flex h-16 items-center gap-3 border-b px-5">
+        <Image
+          src="/logo-star-express.png"
+          alt={STORE.name}
+          width={120}
+          height={36}
+          className="h-9 w-auto object-contain"
+        />
       </div>
       <nav className="p-3">
         <ul className="space-y-1">
@@ -43,14 +45,9 @@ export function AdminSidebar({ pathname }: AdminSidebarProps) {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={cn(
-                    "flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                    active
-                      ? "bg-primary text-white"
-                      : "text-foreground hover:bg-background",
-                  )}
+                  className={cn(adminNavItem, active && adminNavActive)}
                 >
-                  <item.icon className="h-4 w-4" />
+                  <item.icon className="h-4 w-4 shrink-0" />
                   {item.label}
                 </Link>
               </li>

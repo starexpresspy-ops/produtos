@@ -4,11 +4,14 @@ import { useActionState } from "react";
 import { saveStoreSettings } from "@/actions/admin/settings";
 import type { ActionResult } from "@/types/actions";
 import { FormField, FormTextarea } from "@/components/ui/FormField";
+import { adminButtonPrimaryLg } from "@/lib/ui/admin-buttons";
 
 interface StoreSettingsFormProps {
   settings: {
     storeName: string;
     whatsappNumber: string;
+    whatsappNumberSecondary: string;
+    whatsappSecondaryLabel: string;
     whatsappMessageTemplate: string;
     instagramUrl: string;
     contactEmail: string;
@@ -49,11 +52,23 @@ export function StoreSettingsForm({ settings }: StoreSettingsFormProps) {
           defaultValue={settings.storeName}
         />
         <FormField
-          label="Numero do WhatsApp (somente digitos, com DDI e DDD)"
+          label="WhatsApp principal (DDI + DDD + numero)"
           name="whatsappNumber"
           required
           placeholder="5545999999999"
           defaultValue={settings.whatsappNumber}
+        />
+        <FormField
+          label="Segundo WhatsApp (opcional)"
+          name="whatsappNumberSecondary"
+          placeholder="5545999999998"
+          defaultValue={settings.whatsappNumberSecondary}
+        />
+        <FormField
+          label="Nome do segundo WhatsApp (ex.: Vendas, Suporte)"
+          name="whatsappSecondaryLabel"
+          placeholder="WhatsApp 2"
+          defaultValue={settings.whatsappSecondaryLabel}
         />
         <FormTextarea
           label="Mensagem padrao do WhatsApp"
@@ -109,7 +124,7 @@ export function StoreSettingsForm({ settings }: StoreSettingsFormProps) {
       <button
         type="submit"
         disabled={pending}
-        className="bg-primary hover:bg-primary-hover rounded-full px-8 py-3 text-sm font-semibold text-white disabled:opacity-60"
+        className={adminButtonPrimaryLg}
       >
         {pending ? "Salvando..." : "Salvar configuracoes"}
       </button>

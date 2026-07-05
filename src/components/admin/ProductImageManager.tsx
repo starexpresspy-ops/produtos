@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { ImagePlus } from "lucide-react";
 import {
   uploadProductImages,
   deleteProductImageForm,
@@ -9,6 +10,7 @@ import {
 } from "@/actions/admin/products";
 import { MAX_PRODUCT_IMAGES } from "@/lib/supabase/product-mappers";
 import { IMAGE_UPLOAD_HINT } from "@/lib/supabase/product-images";
+import { adminButtonPrimary, adminButtonSecondary } from "@/lib/ui/admin-buttons";
 import type { ActionResult } from "@/types/actions";
 import { getPublicImageUrl } from "@/lib/supabase/mappers";
 
@@ -27,6 +29,9 @@ export function ProductImageManager({
   productId,
   images,
 }: ProductImageManagerProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedCount, setSelectedCount] = useState(0);
+
   const [uploadState, uploadFormAction, uploadPending] = useActionState<
     ActionResult,
     FormData
@@ -36,6 +41,20 @@ export function ProductImageManager({
   );
 
   const remaining = MAX_PRODUCT_IMAGES - images.length;
+
+  useEffect(() => {
+    if (!uploadState?.success) return;
+    setSelectedCount(0);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, [uploadState?.success]);
+
+  function handleFilesChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setSelectedCount(event.target.files?.length ?? 0);
+  }
+
+  function openFilePicker() {
+    fileInputRef.current?.click();
+  }
 
   return (
     <section className="border-border bg-surface rounded-[var(--radius-card)] border p-6">
@@ -116,35 +135,58 @@ export function ProductImageManager({
         <form
           action={uploadFormAction}
           encType="multipart/form-data"
-          className="flex flex-wrap items-end gap-4"
+          className="space-y-4"
         >
+          <input
+            ref={fileInputRef}
+            id="product-images"
+            name="files"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            className="hidden"
+            onChange={handleFilesChange}
+          />
+
           <div>
-            <label
-              htmlFor="product-images"
-              className="text-foreground mb-1.5 block text-sm font-medium"
-            >
-              Enviar imagens (JPEG, PNG, WebP — max 5 MB cada)
-            </label>
-            <input
-              id="product-images"
-              name="files"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              multiple
-              required
-              className="text-sm"
-            />
-            <p className="text-muted mt-1 text-xs">
+            <p className="text-foreground mb-1.5 text-sm font-medium">
+              Enviar imagens (JPEG, PNG, WebP — max 1 MB cada)
+            </p>
+            <p className="text-muted mb-3 text-xs">
               Voce pode selecionar ate {remaining} imagem(ns).
             </p>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={openFilePicker}
+                className={adminButtonPrimary}
+              >
+                <ImagePlus className="h-4 w-4" aria-hidden />
+                Selecionar imagens
+              </button>
+
+              <button
+                type="submit"
+                disabled={uploadPending || selectedCount === 0}
+                className={adminButtonSecondary}
+              >
+                {uploadPending ? "Enviando..." : "Enviar imagens"}
+              </button>
+            </div>
+
+            {selectedCount > 0 ? (
+              <p className="text-primary mt-3 text-sm font-medium">
+                {selectedCount} imagem(ns) selecionada(s). Clique em &quot;Enviar
+                imagens&quot; para fazer o upload.
+              </p>
+            ) : (
+              <p className="text-muted mt-3 text-sm">
+                Clique em &quot;Selecionar imagens&quot; para escolher as fotos do
+                produto.
+              </p>
+            )}
           </div>
-          <button
-            type="submit"
-            disabled={uploadPending}
-            className="border-border hover:bg-background rounded-full border px-6 py-2.5 text-sm font-semibold disabled:opacity-60"
-          >
-            {uploadPending ? "Enviando..." : "Enviar imagens"}
-          </button>
         </form>
       ) : (
         <p className="text-muted text-sm">

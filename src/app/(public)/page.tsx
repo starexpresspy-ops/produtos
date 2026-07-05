@@ -10,6 +10,7 @@ import {
   getHomeProducts,
   getStoreSettings,
 } from "@/services/catalog";
+import { getWhatsappContacts } from "@/lib/whatsapp";
 
 export const revalidate = 60;
 
@@ -20,9 +21,11 @@ export default async function HomePage() {
     getHomeProducts(),
   ]);
 
+  const whatsappContacts = getWhatsappContacts(settings);
+
   return (
     <>
-      <HeroBanner whatsappNumber={settings.whatsappNumber} />
+      <HeroBanner whatsappContacts={whatsappContacts} />
 
       <section className="py-12">
         <Container>
@@ -47,10 +50,7 @@ export default async function HomePage() {
               linkHref="/produtos"
               linkLabel="Ver todos"
             />
-            <ProductGrid
-              products={featured}
-              whatsappNumber={settings.whatsappNumber}
-            />
+            <ProductGrid products={featured} whatsappContacts={whatsappContacts} />
           </Container>
         </section>
       ) : null}
@@ -64,10 +64,7 @@ export default async function HomePage() {
             linkLabel="Ver catálogo"
           />
           {recent.length > 0 ? (
-            <ProductGrid
-              products={recent}
-              whatsappNumber={settings.whatsappNumber}
-            />
+            <ProductGrid products={recent} whatsappContacts={whatsappContacts} />
           ) : (
             <EmptyState
               title="Em breve novos produtos"

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Brand, Category, ProductWithRelations, StockStatus } from "@/types";
+import type { WhatsappContact } from "@/lib/whatsapp";
 import { ProductGrid } from "@/components/public/ProductGrid";
 import { EmptyState } from "@/components/shared/EmptyState";
 
@@ -9,7 +10,7 @@ interface CatalogViewProps {
   products: ProductWithRelations[];
   categories: Category[];
   brands: Brand[];
-  whatsappNumber: string;
+  whatsappContacts: WhatsappContact[];
   initialSearch?: string;
   initialCategorySlug?: string;
 }
@@ -18,7 +19,7 @@ export function CatalogView({
   products,
   categories,
   brands,
-  whatsappNumber,
+  whatsappContacts,
   initialSearch = "",
   initialCategorySlug = "",
 }: CatalogViewProps) {
@@ -87,7 +88,7 @@ export function CatalogView({
       </div>
 
       {filtered.length > 0 ? (
-        <ProductGrid products={filtered} whatsappNumber={whatsappNumber} />
+        <ProductGrid products={filtered} whatsappContacts={whatsappContacts} />
       ) : (
         <EmptyState title="Nenhum produto encontrado" description="Tente ajustar os filtros e a busca." />
       )}

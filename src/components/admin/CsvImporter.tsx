@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { Upload, FileSpreadsheet } from "lucide-react";
 import type { ImportResult } from "@/types/actions";
+import { adminButtonPrimary } from "@/lib/ui/admin-buttons";
 
 interface CsvImporterProps {
   title: string;
@@ -95,7 +96,7 @@ export function CsvImporter({
         <button
           type="submit"
           disabled={pending}
-          className="bg-primary hover:bg-primary-hover inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+          className={adminButtonPrimary}
         >
           <Upload className="h-4 w-4" />
           {pending ? "Importando..." : "Importar CSV"}

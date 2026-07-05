@@ -23,7 +23,8 @@ export async function uploadProductImageFile(
     .from("product_images")
     .select("id", { count: "exact", head: true })
     .eq("product_id", productId);
-  if ((count ?? 0) >= MAX_PRODUCT_IMAGES) {
+  const imageCount = count ?? 0;
+  if (imageCount >= MAX_PRODUCT_IMAGES) {
     return { error: `Limite de ${MAX_PRODUCT_IMAGES} imagens atingido.` };
   }
 
@@ -34,18 +35,11 @@ export async function uploadProductImageFile(
     .upload(storagePath, file, { upsert: false, contentType: file.type });
   if (uploadError) return { error: uploadError.message };
 
-  const { data: first } = await supabase
-    .from("product_images")
-    .select("id")
-    .eq("product_id", productId)
-    .limit(1)
-    .maybeSingle();
-
   const { error: insertError } = await supabase.from("product_images").insert({
     product_id: productId,
     storage_path: storagePath,
-    sort_order: Date.now(),
-    is_cover: !first,
+    sort_order: imageCount,
+    is_cover: imageCount === 0,
   });
 
   if (insertError) return { error: insertError.message };

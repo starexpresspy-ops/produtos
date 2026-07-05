@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { adminButtonPrimary } from "@/lib/ui/admin-buttons";
 import { CsvImporter } from "@/components/admin/CsvImporter";
 import { importProductsFromCsv } from "@/actions/admin/products-import";
 import { getAdminProductsList } from "@/services/admin/products";
@@ -16,7 +17,7 @@ export default async function AdminProductsPage() {
         </div>
         <Link
           href="/admin/produtos/novo"
-          className="bg-primary hover:bg-primary-hover inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white"
+          className={adminButtonPrimary}
         >
           <Plus className="h-4 w-4" />
           Novo produto

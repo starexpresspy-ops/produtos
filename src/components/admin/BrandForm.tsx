@@ -13,6 +13,7 @@ import {
   FormCheckbox,
   FormField,
 } from "@/components/ui/FormField";
+import { adminButtonPrimary } from "@/lib/ui/admin-buttons";
 
 interface BrandFormProps {
   brand?: {
@@ -69,7 +70,7 @@ export function BrandForm({ brand }: BrandFormProps) {
         <button
           type="submit"
           disabled={pending}
-          className="bg-primary hover:bg-primary-hover rounded-full px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+          className={adminButtonPrimary}
         >
           {pending
             ? "Salvando..."

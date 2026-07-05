@@ -1,15 +1,16 @@
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/ui/Container";
-import { WhatsappButton } from "@/components/shared/WhatsappButton";
+import { WhatsappButtons } from "@/components/shared/WhatsappButtons";
 import { DEFAULT_WHATSAPP_MESSAGE, STORE } from "@/constants/store";
+import type { WhatsappContact } from "@/lib/whatsapp";
 
 interface HeroBannerProps {
-  whatsappNumber: string;
+  whatsappContacts: WhatsappContact[];
 }
 
-export function HeroBanner({ whatsappNumber }: HeroBannerProps) {
+export function HeroBanner({ whatsappContacts }: HeroBannerProps) {
   return (
     <section className="from-primary/5 to-background bg-gradient-to-b">
       <Container className="py-12 sm:py-16">
@@ -37,12 +38,12 @@ export function HeroBanner({ whatsappNumber }: HeroBannerProps) {
                 Ver produtos
                 <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
               </Link>
-              <WhatsappButton
-                phone={whatsappNumber}
+              <WhatsappButtons
+                contacts={whatsappContacts}
                 message={DEFAULT_WHATSAPP_MESSAGE}
-                label="Falar no WhatsApp"
                 size="lg"
                 variant="outline"
+                layout="row"
               />
             </div>
           </div>

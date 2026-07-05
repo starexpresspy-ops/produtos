@@ -32,6 +32,16 @@ export const storeSettingsFormSchema = z.object({
     .string()
     .min(10, "Informe o numero do WhatsApp com DDD e DDI.")
     .max(20, "Numero do WhatsApp muito longo."),
+  whatsappNumberSecondary: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((value) => value?.replace(/\D/g, "").trim() || null)
+    .refine(
+      (value) => !value || value.length >= 10,
+      "Informe o segundo WhatsApp com DDD e DDI.",
+    ),
+  whatsappSecondaryLabel: optionalText,
   whatsappMessageTemplate: optionalText,
   instagramUrl: optionalUrl,
   contactEmail: optionalEmail,
