@@ -26,9 +26,9 @@ export default async function AdminProductsPage() {
 
       <CsvImporter
         title="Importar produtos via CSV"
-        description="Importe rapidamente o catalogo."
-        templateHeaders="name,slug,price,category_slug,brand_slug,stock_status,condition"
-        templateExample="iPhone 15,iphone-15,4999,eletronicos,apple,available,new"
+        description="Importe o catalogo. Marca e categoria sao criadas automaticamente se nao existirem."
+        templateHeaders="name,brand,price,promotional_price,category,stock_status,condition"
+        templateExample='TESTO. CIPIONATO 200mg/10ml,TESTOLAND GOLD,160,135,Injetaveis,available,new'
         action={importProductsFromCsv}
       />
 

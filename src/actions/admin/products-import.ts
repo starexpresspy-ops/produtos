@@ -10,9 +10,125 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { uploadProductImageFromUrl } from "@/lib/supabase/product-images";
 import type { ImportResult } from "@/types/actions";
 import type { ProductCondition, StockStatus } from "@/types";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 const VALID_STOCK: StockStatus[] = ["available", "unavailable", "on_request"];
 const VALID_CONDITION: ProductCondition[] = ["new", "used", "open_box"];
+
+async function resolveBrandId(
+  supabase: SupabaseClient,
+  row: Record<string, string>,
+  brandMap: Map<string, string>,
+  details: string[],
+  lineNum: number,
+): Promise<string | null> {
+  const brandName = (row.brand || row.marca || "").trim();
+  const brandSlug = (
+    row.brand_slug ||
+    row.marca_slug ||
+    (brandName ? slugify(brandName) : "")
+  ).trim();
+
+  if (!brandSlug) return null;
+
+  const existing = brandMap.get(brandSlug);
+  if (existing) return existing;
+
+  const name =
+    brandName ||
+    brandSlug
+      .split("-")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+
+  const { data, error } = await supabase
+    .from("brands")
+    .insert({ name, slug: brandSlug, active: true })
+    .select("id")
+    .single();
+
+  if (error) {
+    const { data: refetch } = await supabase
+      .from("brands")
+      .select("id")
+      .eq("slug", brandSlug)
+      .maybeSingle();
+
+    if (refetch?.id) {
+      brandMap.set(brandSlug, refetch.id);
+      return refetch.id;
+    }
+
+    details.push(
+      `Linha ${lineNum}: falha ao criar marca "${name}" — ${error.message}`,
+    );
+    return null;
+  }
+
+  brandMap.set(brandSlug, data.id);
+  details.push(`Linha ${lineNum}: marca "${name}" criada automaticamente.`);
+  return data.id;
+}
+
+async function resolveCategoryId(
+  supabase: SupabaseClient,
+  row: Record<string, string>,
+  categoryMap: Map<string, string>,
+  details: string[],
+  lineNum: number,
+): Promise<string | null> {
+  const categoryName = (row.category || row.categoria || "").trim();
+  const categorySlug = (
+    row.category_slug ||
+    row.categoria_slug ||
+    (categoryName ? slugify(categoryName) : "")
+  ).trim();
+
+  if (!categorySlug) return null;
+
+  const existing = categoryMap.get(categorySlug);
+  if (existing) return existing;
+
+  const name =
+    categoryName ||
+    categorySlug
+      .split("-")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+
+  const { data, error } = await supabase
+    .from("categories")
+    .insert({
+      name,
+      slug: categorySlug,
+      sort_order: categoryMap.size,
+      active: true,
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    const { data: refetch } = await supabase
+      .from("categories")
+      .select("id")
+      .eq("slug", categorySlug)
+      .maybeSingle();
+
+    if (refetch?.id) {
+      categoryMap.set(categorySlug, refetch.id);
+      return refetch.id;
+    }
+
+    details.push(
+      `Linha ${lineNum}: falha ao criar categoria "${name}" — ${error.message}`,
+    );
+    return null;
+  }
+
+  categoryMap.set(categorySlug, data.id);
+  details.push(`Linha ${lineNum}: categoria "${name}" criada automaticamente.`);
+  return data.id;
+}
 
 export async function importProductsFromCsv(
   formData: FormData,
@@ -75,24 +191,30 @@ export async function importProductsFromCsv(
       continue;
     }
 
-    const categorySlug = row.category_slug || row.categoria_slug || "";
-    const brandSlug = row.brand_slug || row.marca_slug || "";
-
-    const categoryId = categorySlug
-      ? categoryMap.get(categorySlug)
-      : undefined;
-    if (categorySlug && !categoryId) {
+    const categoryId = await resolveCategoryId(
+      supabase,
+      row,
+      categoryMap,
+      details,
+      i + 2,
+    );
+    if (
+      (row.category || row.categoria || row.category_slug || row.categoria_slug) &&
+      !categoryId
+    ) {
       skipped++;
-      details.push(
-        `Linha ${i + 2}: categoria "${categorySlug}" nao encontrada.`,
-      );
       continue;
     }
 
-    const brandId = brandSlug ? brandMap.get(brandSlug) : null;
-    if (brandSlug && !brandId) {
+    const brandId = await resolveBrandId(
+      supabase,
+      row,
+      brandMap,
+      details,
+      i + 2,
+    );
+    if ((row.brand || row.marca || row.brand_slug || row.marca_slug) && !brandId) {
       skipped++;
-      details.push(`Linha ${i + 2}: marca "${brandSlug}" nao encontrada.`);
       continue;
     }
 
@@ -125,7 +247,7 @@ export async function importProductsFromCsv(
       description: row.description || row.descricao || null,
       price,
       promotional_price: promotionalPrice,
-      category_id: categoryId ?? null,
+      category_id: categoryId,
       brand_id: brandId,
       stock_quantity: Number(row.stock_quantity || row.estoque || 0) || 0,
       stock_status: stockStatus,
@@ -174,12 +296,14 @@ export async function importProductsFromCsv(
   }
 
   revalidatePath("/admin/produtos");
+  revalidatePath("/admin/marcas");
+  revalidatePath("/admin/categorias");
   revalidateStorefront();
 
   return {
     success: true,
     imported,
     skipped,
-    details: details.slice(0, 15),
+    details: details.slice(0, 25),
   };
 }
