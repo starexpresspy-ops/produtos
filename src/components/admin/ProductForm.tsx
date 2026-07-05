@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   saveProduct,
 } from "@/actions/admin/products";
@@ -60,6 +61,7 @@ export function ProductForm({
   brands,
   product,
 }: ProductFormProps) {
+  const router = useRouter();
   const [saveState, saveFormAction, savePending] = useActionState<
     ActionResult,
     FormData
@@ -68,6 +70,20 @@ export function ProductForm({
       product ? saveProduct(formData, product.id) : saveProduct(formData),
     {},
   );
+
+  useEffect(() => {
+    function refreshCatalogOptions() {
+      router.refresh();
+    }
+
+    window.addEventListener("focus", refreshCatalogOptions);
+    return () => window.removeEventListener("focus", refreshCatalogOptions);
+  }, [router]);
+
+  const catalogKey = [
+    ...categories.map((c) => c.id),
+    ...brands.map((b) => b.id),
+  ].join("-");
 
   return (
     <div className="space-y-8">
@@ -102,6 +118,7 @@ export function ProductForm({
               defaultValue={product?.sku ?? ""}
             />
             <FormSelect
+              key={`category-${catalogKey}`}
               label="Categoria"
               name="categoryId"
               required
@@ -112,6 +129,7 @@ export function ProductForm({
               ]}
             />
             <FormSelect
+              key={`brand-${catalogKey}`}
               label="Marca"
               name="brandId"
               defaultValue={product?.brand_id ?? ""}
@@ -123,7 +141,12 @@ export function ProductForm({
             {brands.length === 0 ? (
               <p className="text-muted sm:col-span-2 text-sm">
                 Nenhuma marca ativa cadastrada.{" "}
-                <Link href="/admin/marcas/novo" className="text-primary font-semibold">
+                <Link
+                  href="/admin/marcas/novo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary font-semibold"
+                >
                   Cadastre uma marca
                 </Link>{" "}
                 antes de vincular ao produto.

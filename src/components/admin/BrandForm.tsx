@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   saveBrand,
   uploadBrandLogo,
@@ -26,11 +27,22 @@ interface BrandFormProps {
 }
 
 export function BrandForm({ brand }: BrandFormProps) {
+  const router = useRouter();
   const [state, formAction, pending] = useActionState<ActionResult, FormData>(
     async (_prev, formData) =>
       brand ? saveBrand(formData, brand.id) : saveBrand(formData),
     {},
   );
+
+  useEffect(() => {
+    if (!state?.success) return;
+
+    router.refresh();
+
+    if (state.brandId && !brand) {
+      router.push(`/admin/marcas/${state.brandId}`);
+    }
+  }, [state, brand, router]);
 
   return (
     <div className="space-y-8">

@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { revalidateStorefront } from "@/lib/catalog/revalidate";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/session";
 import { brandFormSchema } from "@/lib/validations/brand";
@@ -75,7 +74,7 @@ export async function saveBrand(
 
   revalidatePath("/admin/marcas");
   revalidatePath("/admin/produtos");
-  redirect(`/admin/marcas/${data.id}`);
+  return { success: true, brandId: data.id };
 }
 
 export async function importBrandsFromCsv(

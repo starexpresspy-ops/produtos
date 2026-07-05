@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Upload, FileSpreadsheet } from "lucide-react";
 import type { ImportResult } from "@/types/actions";
 import { adminButtonPrimary } from "@/lib/ui/admin-buttons";
@@ -20,10 +21,17 @@ export function CsvImporter({
   templateExample,
   action,
 }: CsvImporterProps) {
+  const router = useRouter();
   const [state, formAction, pending] = useActionState<ImportResult, FormData>(
     async (_prev, formData) => action(formData),
     {},
   );
+
+  useEffect(() => {
+    if (state?.success) {
+      router.refresh();
+    }
+  }, [state?.success, router]);
 
   function downloadTemplate() {
     const content = `${templateHeaders}\n${templateExample}`;

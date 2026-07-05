@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   saveCategory,
   uploadCategoryImage,
@@ -29,6 +30,7 @@ interface CategoryFormProps {
 }
 
 export function CategoryForm({ category }: CategoryFormProps) {
+  const router = useRouter();
   const [state, formAction, pending] = useActionState<ActionResult, FormData>(
     async (_prev, formData) =>
       category
@@ -36,6 +38,16 @@ export function CategoryForm({ category }: CategoryFormProps) {
         : saveCategory(formData),
     {},
   );
+
+  useEffect(() => {
+    if (!state?.success) return;
+
+    router.refresh();
+
+    if (state.categoryId && !category) {
+      router.push(`/admin/categorias/${state.categoryId}`);
+    }
+  }, [state, category, router]);
 
   return (
     <div className="space-y-8">

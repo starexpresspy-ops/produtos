@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { revalidateStorefront } from "@/lib/catalog/revalidate";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/session";
 import { categoryFormSchema } from "@/lib/validations/category";
@@ -75,7 +74,7 @@ export async function saveCategory(
   if (error) return { error: error.message };
 
   revalidatePaths();
-  redirect(`/admin/categorias/${data.id}`);
+  return { success: true, categoryId: data.id };
 }
 
 export async function importCategoriesFromCsv(
