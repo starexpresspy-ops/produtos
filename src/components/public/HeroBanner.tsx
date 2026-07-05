@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/ui/Container";
@@ -28,13 +29,13 @@ export function HeroBanner({ whatsappNumber }: HeroBannerProps) {
               Eletrônicos, perfumes e acessórios com preço justo. Escolha o
               produto e finalize a compra direto com a gente, sem complicação.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-stretch">
               <Link
                 href="/produtos"
-                className="bg-primary hover:bg-primary-hover inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-base font-semibold text-white transition-colors"
+                className="bg-primary hover:bg-primary-hover inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-base font-semibold !text-white shadow-sm transition-colors sm:min-w-[180px]"
               >
                 Ver produtos
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
               </Link>
               <WhatsappButton
                 phone={whatsappNumber}
@@ -46,13 +47,14 @@ export function HeroBanner({ whatsappNumber }: HeroBannerProps) {
             </div>
           </div>
 
-          <div className="from-primary via-primary/80 to-gold/40 relative aspect-[4/3] overflow-hidden rounded-[var(--radius-card)] bg-gradient-to-br shadow-[var(--shadow-card-hover)]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.2),transparent_50%)]" />
-            <div className="absolute inset-0 flex items-center justify-center p-8 text-center">
-              <p className="text-2xl font-bold text-white drop-shadow-sm sm:text-3xl">
-                Star Express
-              </p>
-            </div>
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-card)] bg-black shadow-[var(--shadow-card-hover)]">
+            <Image
+              src="/logo-star-express.png"
+              alt="Star Express PY"
+              fill
+              className="object-contain p-6 sm:p-8"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
           </div>
         </div>
       </Container>

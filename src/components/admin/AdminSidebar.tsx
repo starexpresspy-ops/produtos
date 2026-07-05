@@ -30,7 +30,7 @@ export function AdminSidebar({ pathname }: AdminSidebarProps) {
         </span>
         <div>
           <p className="text-foreground text-sm font-bold">Painel Lojista</p>
-          <p className="text-muted text-xs">Star Express</p>
+          <p className="text-muted text-xs">Star Express PY</p>
         </div>
       </div>
       <nav className="p-3">

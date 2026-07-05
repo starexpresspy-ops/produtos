@@ -1,6 +1,6 @@
 export const STORE = {
-  name: "Star Express",
-  tagline: "Importados premium com atendimento rapido e confiavel.",
+  name: "Star Express PY",
+  tagline: "Do Paraguai para o Brasil, com agilidade e confianca.",
 };
 
 export const SITE_URL =
