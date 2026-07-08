@@ -9,14 +9,13 @@ import { ProductGallery } from "@/components/public/ProductGallery";
 import { ProductGrid } from "@/components/public/ProductGrid";
 import { PriceDisplay } from "@/components/shared/PriceDisplay";
 import { StatusBadge, FeaturedBadge } from "@/components/shared/StatusBadge";
-import { WhatsappButtons } from "@/components/shared/WhatsappButtons";
+import { ProductAddToCart } from "@/components/public/ProductAddToCart";
 import { ShareButton } from "@/components/shared/ShareButton";
 import {
   getProductBySlug,
   getRelatedProducts,
   getStoreSettings,
 } from "@/services/catalog";
-import { buildProductMessage, getWhatsappContacts } from "@/lib/whatsapp";
 import { SITE_URL } from "@/constants/store";
 
 const CONDITION_LABELS: Record<ProductCondition, string> = {
@@ -62,9 +61,6 @@ export default async function ProductPage({
 
   const related = await getRelatedProducts(product);
   const productUrl = `${SITE_URL}/produto/${product.slug}`;
-  const isAvailable = product.stockStatus === "available";
-  const message = buildProductMessage({ product, productUrl });
-  const whatsappContacts = getWhatsappContacts(settings);
 
   return (
     <Container className="py-8">
@@ -124,18 +120,7 @@ export default async function ProductPage({
           />
 
           <div className="mt-6 space-y-3">
-            <WhatsappButtons
-              contacts={whatsappContacts.map((contact) => ({
-                ...contact,
-                label: isAvailable
-                  ? `Comprar — ${contact.label}`
-                  : `Consultar — ${contact.label}`,
-              }))}
-              message={message}
-              size="lg"
-              fullWidth
-              layout="column"
-            />
+            <ProductAddToCart product={product} />
             <ShareButton
               title={product.name}
               url={productUrl}
@@ -176,7 +161,7 @@ export default async function ProductPage({
       {related.length > 0 ? (
         <section className="mt-16">
           <SectionHeading title="Produtos relacionados" />
-          <ProductGrid products={related} whatsappContacts={whatsappContacts} />
+          <ProductGrid products={related} />
         </section>
       ) : null}
     </Container>

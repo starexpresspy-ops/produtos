@@ -3,20 +3,10 @@ import Image from "next/image";
 import type { ProductWithRelations } from "@/types";
 import { PriceDisplay } from "@/components/shared/PriceDisplay";
 import { StatusBadge } from "@/components/shared/StatusBadge";
-import { WhatsappButtons } from "@/components/shared/WhatsappButtons";
-import { buildProductMessage } from "@/lib/whatsapp";
-import { SITE_URL } from "@/constants/store";
-import type { WhatsappContact } from "@/lib/whatsapp";
+import { AddToCartButton } from "@/components/public/AddToCartButton";
 
-export function ProductCard({
-  product,
-  whatsappContacts,
-}: {
-  product: ProductWithRelations;
-  whatsappContacts: WhatsappContact[];
-}) {
+export function ProductCard({ product }: { product: ProductWithRelations }) {
   const cover = product.images.find((img) => img.isCover) ?? product.images[0];
-  const productUrl = `${SITE_URL}/produto/${product.slug}`;
 
   return (
     <article className="border-border bg-surface rounded-[var(--radius-card)] border p-4">
@@ -37,12 +27,7 @@ export function ProductCard({
         <StatusBadge status={product.stockStatus} />
       </div>
       <div className="mt-4">
-        <WhatsappButtons
-          contacts={whatsappContacts}
-          message={buildProductMessage({ product, productUrl })}
-          fullWidth
-          layout="column"
-        />
+        <AddToCartButton product={product} />
       </div>
     </article>
   );

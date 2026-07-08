@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useRef, useState } from "react";
 import Image from "next/image";
 import { ImagePlus } from "lucide-react";
 import {
@@ -36,17 +36,18 @@ export function ProductImageManager({
     ActionResult,
     FormData
   >(
-    async (_prev, formData) => uploadProductImages(productId, formData),
+    async (_prev, formData) => {
+      const result = await uploadProductImages(productId, formData);
+      if (result.success) {
+        setSelectedCount(0);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      }
+      return result;
+    },
     {},
   );
 
   const remaining = MAX_PRODUCT_IMAGES - images.length;
-
-  useEffect(() => {
-    if (!uploadState?.success) return;
-    setSelectedCount(0);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  }, [uploadState?.success]);
 
   function handleFilesChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSelectedCount(event.target.files?.length ?? 0);

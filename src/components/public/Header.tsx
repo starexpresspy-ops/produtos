@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/public/Logo";
+import { CartIconLink } from "@/components/public/CartIconLink";
 import { WhatsappButtons } from "@/components/shared/WhatsappButtons";
 import type { WhatsappContact } from "@/lib/whatsapp";
 
@@ -22,6 +23,9 @@ export function Header({
             <Link href="/produtos" className="hover:text-primary transition-colors">
               Produtos
             </Link>
+            <Link href="/carrinho" className="hover:text-primary transition-colors">
+              Carrinho
+            </Link>
             <Link href="/sobre" className="hover:text-primary transition-colors">
               Sobre
             </Link>
@@ -29,6 +33,7 @@ export function Header({
               Contato
             </Link>
           </nav>
+          <CartIconLink />
           <WhatsappButtons
             contacts={whatsappContacts}
             message="Ola! Quero atendimento da Star Express."

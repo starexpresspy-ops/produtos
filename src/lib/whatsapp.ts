@@ -1,5 +1,8 @@
 import { formatCurrency } from "@/lib/formatters/currency";
+import type { CartItem } from "@/types/cart";
 import type { ProductWithRelations, StoreSettings } from "@/types";
+import { getLineTotal, getCartTotal } from "@/lib/cart";
+import { SITE_URL } from "@/constants/store";
 
 export interface WhatsappContact {
   phone: string;
@@ -76,5 +79,31 @@ export function buildProductMessage({
   }
 
   lines.push("", "Pode confirmar a disponibilidade?");
+  return lines.join("\n");
+}
+
+export function buildCartMessage(items: CartItem[]) {
+  const lines = [
+    "Ola! Quero finalizar meu pedido pela vitrine Star Express:",
+    "",
+  ];
+
+  items.forEach((item, index) => {
+    lines.push(`${index + 1}. ${item.name}`);
+    if (item.shortDescription) {
+      lines.push(`   Descricao: ${item.shortDescription}`);
+    }
+    if (item.sku) {
+      lines.push(`   Codigo: ${item.sku}`);
+    }
+    lines.push(`   Quantidade: ${item.quantity}`);
+    lines.push(`   Valor unitario: ${formatCurrency(item.unitPrice)}`);
+    lines.push(`   Subtotal: ${formatCurrency(getLineTotal(item))}`);
+    lines.push(`   Link: ${SITE_URL}/produto/${item.slug}`);
+    lines.push("");
+  });
+
+  lines.push(`Total do pedido: ${formatCurrency(getCartTotal(items))}`);
+  lines.push("", "Pode confirmar disponibilidade e forma de pagamento?");
   return lines.join("\n");
 }
