@@ -11,6 +11,7 @@ import { formatCurrency } from "@/lib/formatters/currency";
 import { buildCartMessage } from "@/lib/whatsapp";
 import { WhatsappButtons } from "@/components/shared/WhatsappButtons";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { ResponsibilityNotice } from "@/components/shared/ResponsibilityNotice";
 import { FormField, FormTextarea } from "@/components/ui/FormField";
 import type { CartCustomerInfo } from "@/types/cart";
 import type { WhatsappContact } from "@/lib/whatsapp";
@@ -241,6 +242,17 @@ export function CartView({ whatsappContacts }: { whatsappContacts: WhatsappConta
         <div className="mb-6 flex items-center justify-between gap-4">
           <span className="text-foreground text-lg font-semibold">Total do pedido</span>
           <span className="text-primary text-2xl font-extrabold">{formatCurrency(total)}</span>
+        </div>
+
+        <div className="mb-6 space-y-3">
+          <ResponsibilityNotice>
+            Em breve entraremos em contato para finalizar a compra. Favor se atentar as
+            informacoes inseridas — informacoes erradas voce correra o risco de perder a
+            mercadoria.
+          </ResponsibilityNotice>
+          <ResponsibilityNotice>
+            Informamos que seus dados nao serao gravados em nosso sistema.
+          </ResponsibilityNotice>
         </div>
 
         {!customerValid ? (
