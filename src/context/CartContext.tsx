@@ -30,6 +30,8 @@ interface CartContextValue {
 const CartContext = createContext<CartContextValue | null>(null);
 
 const listeners = new Set<() => void>();
+let cachedRaw = "";
+let cachedItems: CartItem[] = [];
 
 function emitChange() {
   listeners.forEach((listener) => listener());
@@ -37,24 +39,49 @@ function emitChange() {
 
 function subscribe(listener: () => void) {
   listeners.add(listener);
-  return () => listeners.delete(listener);
+
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === CART_STORAGE_KEY) {
+      cachedRaw = "";
+      listener();
+    }
+  };
+
+  if (typeof window !== "undefined") {
+    window.addEventListener("storage", onStorage);
+  }
+
+  return () => {
+    listeners.delete(listener);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("storage", onStorage);
+    }
+  };
 }
 
 function readStoredItems(): CartItem[] {
   if (typeof window === "undefined") return [];
 
   try {
-    const raw = window.localStorage.getItem(CART_STORAGE_KEY);
-    if (!raw) return [];
+    const raw = window.localStorage.getItem(CART_STORAGE_KEY) ?? "[]";
+    if (raw === cachedRaw) return cachedItems;
+
+    cachedRaw = raw;
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    cachedItems = Array.isArray(parsed) ? parsed : [];
+    return cachedItems;
   } catch {
-    return [];
+    cachedRaw = "[]";
+    cachedItems = [];
+    return cachedItems;
   }
 }
 
 function writeStoredItems(items: CartItem[]) {
-  window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  const raw = JSON.stringify(items);
+  cachedRaw = raw;
+  cachedItems = items;
+  window.localStorage.setItem(CART_STORAGE_KEY, raw);
   emitChange();
 }
 
@@ -62,12 +89,20 @@ function getServerSnapshot() {
   return [] as CartItem[];
 }
 
+function getServerReadySnapshot() {
+  return false;
+}
+
+function getClientReadySnapshot() {
+  return true;
+}
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const items = useSyncExternalStore(subscribe, readStoredItems, getServerSnapshot);
   const isReady = useSyncExternalStore(
     subscribe,
-    () => typeof window !== "undefined",
-    () => false,
+    getClientReadySnapshot,
+    getServerReadySnapshot,
   );
 
   const addItem = useCallback((item: CartItem, quantity = 1) => {
