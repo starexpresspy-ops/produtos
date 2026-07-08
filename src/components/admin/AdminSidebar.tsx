@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Package,
   Settings,
+  ShoppingCart,
   Tag,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
@@ -14,6 +15,7 @@ import { STORE } from "@/constants/store";
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/produtos", label: "Produtos", icon: Package },
+  { href: "/admin/pedidos", label: "Pedidos", icon: ShoppingCart },
   { href: "/admin/categorias", label: "Categorias", icon: FolderTree },
   { href: "/admin/marcas", label: "Marcas", icon: Tag },
   { href: "/admin/configuracoes", label: "Configuracoes", icon: Settings },

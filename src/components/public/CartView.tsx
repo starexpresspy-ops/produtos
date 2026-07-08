@@ -9,7 +9,7 @@ import { CART_CUSTOMER_STORAGE_KEY } from "@/constants/cart";
 import { getLineTotal, getMaxQuantity } from "@/lib/cart";
 import { formatCurrency } from "@/lib/formatters/currency";
 import { buildCartMessage } from "@/lib/whatsapp";
-import { WhatsappButtons } from "@/components/shared/WhatsappButtons";
+import { CartCheckoutButtons } from "@/components/public/CartCheckoutButtons";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ResponsibilityNotice } from "@/components/shared/ResponsibilityNotice";
 import { FormField, FormTextarea } from "@/components/ui/FormField";
@@ -63,6 +63,14 @@ export function CartView({ whatsappContacts }: { whatsappContacts: WhatsappConta
     value: CartCustomerInfo[K],
   ) {
     setCustomer((current) => ({ ...current, [field]: value }));
+  }
+
+  function handleCheckoutCompleted() {
+    clearCart();
+    setCustomer(EMPTY_CUSTOMER);
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(CART_CUSTOMER_STORAGE_KEY);
+    }
   }
 
   if (!isReady) {
@@ -251,7 +259,7 @@ export function CartView({ whatsappContacts }: { whatsappContacts: WhatsappConta
             mercadoria.
           </ResponsibilityNotice>
           <ResponsibilityNotice>
-            Informamos que seus dados nao serao gravados em nosso sistema.
+            Seus dados serao usados somente para processar este pedido e contato da loja.
           </ResponsibilityNotice>
         </div>
 
@@ -263,15 +271,15 @@ export function CartView({ whatsappContacts }: { whatsappContacts: WhatsappConta
 
         <div className="flex flex-col gap-3 sm:flex-row">
           {customerValid ? (
-            <WhatsappButtons
+            <CartCheckoutButtons
               contacts={whatsappContacts.map((contact) => ({
                 ...contact,
-                label: `Finalizar no ${contact.label}`,
+                label: contact.label,
               }))}
               message={message}
-              size="lg"
-              fullWidth
-              layout="column"
+              items={items}
+              customer={customer}
+              onCompleted={handleCheckoutCompleted}
             />
           ) : (
             <button

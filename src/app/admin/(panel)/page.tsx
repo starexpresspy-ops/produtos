@@ -4,9 +4,9 @@ export default async function AdminDashboardPage() {
   const stats = await getAdminDashboardStats();
   const cards = [
     { label: "Produtos", value: stats.products },
+    { label: "Pedidos pendentes", value: stats.pendingOrders },
     { label: "Categorias", value: stats.categories },
     { label: "Marcas", value: stats.brands },
-    { label: "Em destaque", value: stats.highlights },
   ];
 
   return (

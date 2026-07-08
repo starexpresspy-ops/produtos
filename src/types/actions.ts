@@ -4,6 +4,7 @@ export interface ActionResult {
   productId?: string;
   brandId?: string;
   categoryId?: string;
+  orderId?: string;
 }
 
 export interface ImportResult {
