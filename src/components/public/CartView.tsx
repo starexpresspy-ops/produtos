@@ -2,17 +2,67 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { CART_CUSTOMER_STORAGE_KEY } from "@/constants/cart";
 import { getLineTotal, getMaxQuantity } from "@/lib/cart";
 import { formatCurrency } from "@/lib/formatters/currency";
 import { buildCartMessage } from "@/lib/whatsapp";
 import { WhatsappButtons } from "@/components/shared/WhatsappButtons";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { FormField, FormTextarea } from "@/components/ui/FormField";
+import type { CartCustomerInfo } from "@/types/cart";
 import type { WhatsappContact } from "@/lib/whatsapp";
+import { cn } from "@/lib/utils/cn";
+
+const EMPTY_CUSTOMER: CartCustomerInfo = {
+  name: "",
+  address: "",
+  phone: "",
+};
+
+function readStoredCustomer(): CartCustomerInfo {
+  if (typeof window === "undefined") return EMPTY_CUSTOMER;
+
+  try {
+    const raw = window.localStorage.getItem(CART_CUSTOMER_STORAGE_KEY);
+    if (!raw) return EMPTY_CUSTOMER;
+    const parsed = JSON.parse(raw) as Partial<CartCustomerInfo>;
+    return {
+      name: parsed.name ?? "",
+      address: parsed.address ?? "",
+      phone: parsed.phone ?? "",
+    };
+  } catch {
+    return EMPTY_CUSTOMER;
+  }
+}
+
+function isCustomerValid(customer: CartCustomerInfo) {
+  return (
+    customer.name.trim().length >= 2 &&
+    customer.address.trim().length >= 10 &&
+    customer.phone.replace(/\D/g, "").length >= 10
+  );
+}
 
 export function CartView({ whatsappContacts }: { whatsappContacts: WhatsappContact[] }) {
   const { items, total, updateQuantity, removeItem, clearCart, isReady } = useCart();
+  const [customer, setCustomer] = useState<CartCustomerInfo>(() =>
+    typeof window !== "undefined" ? readStoredCustomer() : EMPTY_CUSTOMER,
+  );
+
+  useEffect(() => {
+    window.localStorage.setItem(CART_CUSTOMER_STORAGE_KEY, JSON.stringify(customer));
+  }, [customer]);
+
+  function updateCustomer<K extends keyof CartCustomerInfo>(
+    field: K,
+    value: CartCustomerInfo[K],
+  ) {
+    setCustomer((current) => ({ ...current, [field]: value }));
+  }
 
   if (!isReady) {
     return (
@@ -41,7 +91,8 @@ export function CartView({ whatsappContacts }: { whatsappContacts: WhatsappConta
     );
   }
 
-  const message = buildCartMessage(items);
+  const customerValid = isCustomerValid(customer);
+  const message = buildCartMessage(items, customer);
 
   return (
     <div className="space-y-6">
@@ -152,22 +203,76 @@ export function CartView({ whatsappContacts }: { whatsappContacts: WhatsappConta
       </div>
 
       <div className="border-border bg-surface rounded-[var(--radius-card)] border p-6">
+        <h2 className="text-foreground mb-4 text-lg font-semibold">Dados para entrega</h2>
+        <div className="grid gap-4">
+          <FormField
+            label="Nome completo"
+            name="customerName"
+            value={customer.name}
+            onChange={(event) => updateCustomer("name", event.target.value)}
+            placeholder="Seu nome completo"
+            required
+            autoComplete="name"
+          />
+          <FormTextarea
+            label="Endereco completo"
+            name="customerAddress"
+            value={customer.address}
+            onChange={(event) => updateCustomer("address", event.target.value)}
+            placeholder="Rua, numero, bairro, cidade, estado, CEP"
+            rows={3}
+            required
+            autoComplete="street-address"
+          />
+          <FormField
+            label="Telefone / WhatsApp"
+            name="customerPhone"
+            type="tel"
+            value={customer.phone}
+            onChange={(event) => updateCustomer("phone", event.target.value)}
+            placeholder="DDD + numero"
+            required
+            autoComplete="tel"
+          />
+        </div>
+      </div>
+
+      <div className="border-border bg-surface rounded-[var(--radius-card)] border p-6">
         <div className="mb-6 flex items-center justify-between gap-4">
           <span className="text-foreground text-lg font-semibold">Total do pedido</span>
           <span className="text-primary text-2xl font-extrabold">{formatCurrency(total)}</span>
         </div>
 
+        {!customerValid ? (
+          <p className="text-muted mb-4 text-sm">
+            Preencha nome, endereco completo e telefone para finalizar o pedido.
+          </p>
+        ) : null}
+
         <div className="flex flex-col gap-3 sm:flex-row">
-          <WhatsappButtons
-            contacts={whatsappContacts.map((contact) => ({
-              ...contact,
-              label: `Finalizar no ${contact.label}`,
-            }))}
-            message={message}
-            size="lg"
-            fullWidth
-            layout="column"
-          />
+          {customerValid ? (
+            <WhatsappButtons
+              contacts={whatsappContacts.map((contact) => ({
+                ...contact,
+                label: `Finalizar no ${contact.label}`,
+              }))}
+              message={message}
+              size="lg"
+              fullWidth
+              layout="column"
+            />
+          ) : (
+            <button
+              type="button"
+              disabled
+              className={cn(
+                "inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-base font-semibold",
+                "bg-primary/40 !text-white cursor-not-allowed",
+              )}
+            >
+              Preencha seus dados para finalizar
+            </button>
+          )}
           <button
             type="button"
             onClick={clearCart}

@@ -12,3 +12,9 @@ export interface CartItem {
   stockStatus: StockStatus;
   stockQuantity: number;
 }
+
+export interface CartCustomerInfo {
+  name: string;
+  address: string;
+  phone: string;
+}

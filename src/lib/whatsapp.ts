@@ -1,5 +1,5 @@
 import { formatCurrency } from "@/lib/formatters/currency";
-import type { CartItem } from "@/types/cart";
+import type { CartCustomerInfo, CartItem } from "@/types/cart";
 import type { ProductWithRelations, StoreSettings } from "@/types";
 import { getLineTotal, getCartTotal } from "@/lib/cart";
 import { SITE_URL } from "@/constants/store";
@@ -82,11 +82,22 @@ export function buildProductMessage({
   return lines.join("\n");
 }
 
-export function buildCartMessage(items: CartItem[]) {
+export function buildCartMessage(
+  items: CartItem[],
+  customer?: CartCustomerInfo,
+) {
   const lines = [
     "Ola! Quero finalizar meu pedido pela vitrine Star Express:",
     "",
   ];
+
+  if (customer?.name && customer.address && customer.phone) {
+    lines.push("Dados do cliente:");
+    lines.push(`Nome: ${customer.name}`);
+    lines.push(`Endereco: ${customer.address}`);
+    lines.push(`Telefone: ${customer.phone}`);
+    lines.push("");
+  }
 
   items.forEach((item, index) => {
     lines.push(`${index + 1}. ${item.name}`);
