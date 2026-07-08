@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { signOutAdmin } from "@/actions/auth";
 import { ExternalLink, LogOut } from "lucide-react";
-import { SITE_URL } from "@/constants/store";
 import { adminButtonSecondary } from "@/lib/ui/admin-buttons";
 import type { AuthUser } from "@/types/auth";
 
@@ -13,15 +12,15 @@ export function AdminHeader({ user }: { user: AuthUser }) {
         <p className="text-foreground font-semibold">{user.profile.name}</p>
       </div>
       <div className="flex items-center gap-3">
-        <a
-          href={SITE_URL}
+        <Link
+          href="/"
           target="_blank"
           rel="noopener noreferrer"
           className={adminButtonSecondary}
         >
           <ExternalLink className="h-4 w-4" />
           Ver vitrine
-        </a>
+        </Link>
         <form action={signOutAdmin}>
           <button
             type="submit"
