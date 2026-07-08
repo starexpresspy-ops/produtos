@@ -7,7 +7,7 @@ import {
   useMemo,
   useSyncExternalStore,
 } from "react";
-import { CART_STORAGE_KEY } from "@/constants/cart";
+import { CART_ADDED_FEEDBACK_MS, CART_STORAGE_KEY } from "@/constants/cart";
 import {
   clampQuantity,
   getCartItemCount,
@@ -21,6 +21,7 @@ interface CartContextValue {
   itemCount: number;
   total: number;
   isReady: boolean;
+  recentlyAddedProductId: string | null;
   addItem: (item: CartItem, quantity?: number) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
@@ -30,11 +31,47 @@ interface CartContextValue {
 const CartContext = createContext<CartContextValue | null>(null);
 
 const listeners = new Set<() => void>();
+const addedFeedbackListeners = new Set<() => void>();
 let cachedRaw = "";
 let cachedItems: CartItem[] = [];
+let recentlyAddedProductId: string | null = null;
 
 function emitChange() {
   listeners.forEach((listener) => listener());
+}
+
+function emitAddedFeedbackChange() {
+  addedFeedbackListeners.forEach((listener) => listener());
+}
+
+function subscribeAddedFeedback(listener: () => void) {
+  addedFeedbackListeners.add(listener);
+  return () => {
+    addedFeedbackListeners.delete(listener);
+  };
+}
+
+function getRecentlyAddedProductId() {
+  return recentlyAddedProductId;
+}
+
+let addedFeedbackTimer: ReturnType<typeof setTimeout> | null = null;
+
+function flashAddedProduct(productId: string) {
+  recentlyAddedProductId = productId;
+  emitAddedFeedbackChange();
+
+  if (addedFeedbackTimer) {
+    clearTimeout(addedFeedbackTimer);
+  }
+
+  addedFeedbackTimer = setTimeout(() => {
+    if (recentlyAddedProductId === productId) {
+      recentlyAddedProductId = null;
+      emitAddedFeedbackChange();
+    }
+    addedFeedbackTimer = null;
+  }, CART_ADDED_FEEDBACK_MS);
 }
 
 function subscribe(listener: () => void) {
@@ -104,6 +141,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     getClientReadySnapshot,
     getServerReadySnapshot,
   );
+  const addedProductId = useSyncExternalStore(
+    subscribeAddedFeedback,
+    getRecentlyAddedProductId,
+    () => null,
+  );
 
   const addItem = useCallback((item: CartItem, quantity = 1) => {
     if (getMaxQuantity(item) === 0) return;
@@ -115,6 +157,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const nextQuantity = clampQuantity(item, quantity);
       if (nextQuantity === 0) return;
       writeStoredItems([...current, { ...item, quantity: nextQuantity }]);
+      flashAddedProduct(item.productId);
       return;
     }
 
@@ -129,6 +172,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           : entry,
       ),
     );
+    flashAddedProduct(item.productId);
   }, []);
 
   const removeItem = useCallback((productId: string) => {
@@ -157,12 +201,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       itemCount: getCartItemCount(items),
       total: getCartTotal(items),
       isReady,
+      recentlyAddedProductId: addedProductId,
       addItem,
       removeItem,
       updateQuantity,
       clearCart,
     }),
-    [items, isReady, addItem, removeItem, updateQuantity, clearCart],
+    [items, isReady, addedProductId, addItem, removeItem, updateQuantity, clearCart],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

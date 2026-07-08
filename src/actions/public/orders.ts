@@ -16,6 +16,16 @@ export async function createOrderFromCart(input: {
     return { error: "Sistema indisponivel no momento. Tente novamente." };
   }
 
+  let supabase;
+  try {
+    supabase = createOrdersClient();
+  } catch {
+    return {
+      error:
+        "Pedidos temporariamente indisponiveis. A loja precisa configurar SUPABASE_SERVICE_ROLE_KEY.",
+    };
+  }
+
   const total = getCartTotal(input.items);
 
   const parsed = createOrderSchema.safeParse({
@@ -40,7 +50,6 @@ export async function createOrderFromCart(input: {
     return { error: parsed.error.issues[0]?.message ?? "Dados do pedido invalidos." };
   }
 
-  const supabase = createOrdersClient();
   const { data: order, error: orderError } = await supabase
     .from("orders")
     .insert({
@@ -55,7 +64,14 @@ export async function createOrderFromCart(input: {
     .single();
 
   if (orderError || !order) {
-    return { error: orderError?.message ?? "Nao foi possivel registrar o pedido." };
+    const raw = orderError?.message ?? "";
+    if (raw.includes("row-level security") || raw.includes("permission denied")) {
+      return {
+        error:
+          "Nao foi possivel registrar o pedido. Verifique se as migrations de pedidos foram aplicadas no Supabase.",
+      };
+    }
+    return { error: raw || "Nao foi possivel registrar o pedido." };
   }
 
   const { error: itemsError } = await supabase.from("order_items").insert(

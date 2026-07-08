@@ -9,12 +9,12 @@ import type { ProductWithRelations } from "@/types";
 import { cn } from "@/lib/utils/cn";
 
 export function ProductAddToCart({ product }: { product: ProductWithRelations }) {
-  const { addItem } = useCart();
+  const { addItem, recentlyAddedProductId } = useCart();
   const cartItem = productToCartItem(product);
   const maxQuantity = getMaxQuantity(cartItem);
   const canAdd = maxQuantity > 0;
   const [quantity, setQuantity] = useState(1);
-  const [feedback, setFeedback] = useState<"idle" | "added">("idle");
+  const isAdded = recentlyAddedProductId === product.id;
 
   function changeQuantity(delta: number) {
     setQuantity((current) => clampQuantity(cartItem, current + delta));
@@ -22,10 +22,7 @@ export function ProductAddToCart({ product }: { product: ProductWithRelations })
 
   function handleAdd() {
     if (!canAdd) return;
-
     addItem(cartItem, quantity);
-    setFeedback("added");
-    window.setTimeout(() => setFeedback("idle"), 1800);
   }
 
   return (
@@ -61,14 +58,14 @@ export function ProductAddToCart({ product }: { product: ProductWithRelations })
         disabled={!canAdd}
         className={cn(
           "inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-base font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
-          feedback === "added"
+          isAdded
             ? "bg-primary !text-white"
             : "bg-accent hover:bg-accent-hover !text-white shadow-sm",
         )}
       >
         <ShoppingCart className="h-5 w-5 shrink-0" aria-hidden />
         <span>
-          {feedback === "added"
+          {isAdded
             ? "Adicionado ao carrinho!"
             : canAdd
               ? "Adicionar ao carrinho"

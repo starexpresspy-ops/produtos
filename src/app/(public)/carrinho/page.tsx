@@ -1,20 +1,15 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
 import { CartView } from "@/components/public/CartView";
-import { getStoreSettings } from "@/services/catalog";
-import { getWhatsappContacts } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Carrinho",
-  description: "Revise os produtos selecionados antes de finalizar pelo WhatsApp.",
+  description: "Revise os produtos selecionados antes de finalizar o pedido.",
 };
 
 export const revalidate = 60;
 
-export default async function CartPage() {
-  const settings = await getStoreSettings();
-  const whatsappContacts = getWhatsappContacts(settings);
-
+export default function CartPage() {
   return (
     <Container className="py-8">
       <div className="mb-8">
@@ -25,7 +20,7 @@ export default async function CartPage() {
         </p>
       </div>
 
-      <CartView whatsappContacts={whatsappContacts} />
+      <CartView />
     </Container>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { productToCartItem } from "@/lib/cart";
@@ -16,16 +15,13 @@ export function AddToCartButton({
   fullWidth?: boolean;
   size?: "md" | "lg";
 }) {
-  const { addItem } = useCart();
-  const [feedback, setFeedback] = useState<"idle" | "added">("idle");
+  const { addItem, recentlyAddedProductId } = useCart();
   const canAdd = product.stockStatus !== "unavailable";
+  const isAdded = recentlyAddedProductId === product.id;
 
   function handleClick() {
     if (!canAdd) return;
-
     addItem(productToCartItem(product), 1);
-    setFeedback("added");
-    window.setTimeout(() => setFeedback("idle"), 1800);
   }
 
   return (
@@ -37,14 +33,14 @@ export function AddToCartButton({
         "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
         size === "lg" ? "px-6 py-3.5 text-base" : "px-5 py-2.5 text-sm",
         fullWidth && "w-full",
-        feedback === "added"
+        isAdded
           ? "bg-primary !text-white"
           : "bg-accent hover:bg-accent-hover !text-white shadow-sm",
       )}
     >
       <ShoppingCart className="h-4 w-4 shrink-0" aria-hidden />
       <span>
-        {feedback === "added"
+        {isAdded
           ? "Adicionado!"
           : canAdd
             ? "Adicionar ao carrinho"

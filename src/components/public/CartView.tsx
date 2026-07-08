@@ -14,7 +14,6 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { ResponsibilityNotice } from "@/components/shared/ResponsibilityNotice";
 import { FormField, FormTextarea } from "@/components/ui/FormField";
 import type { CartCustomerInfo } from "@/types/cart";
-import type { WhatsappContact } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils/cn";
 
 const EMPTY_CUSTOMER: CartCustomerInfo = {
@@ -48,7 +47,7 @@ function isCustomerValid(customer: CartCustomerInfo) {
   );
 }
 
-export function CartView({ whatsappContacts }: { whatsappContacts: WhatsappContact[] }) {
+export function CartView() {
   const { items, total, updateQuantity, removeItem, clearCart, isReady } = useCart();
   const [customer, setCustomer] = useState<CartCustomerInfo>(() =>
     typeof window !== "undefined" ? readStoredCustomer() : EMPTY_CUSTOMER,
@@ -272,13 +271,9 @@ export function CartView({ whatsappContacts }: { whatsappContacts: WhatsappConta
         <div className="flex flex-col gap-3 sm:flex-row">
           {customerValid ? (
             <CartCheckoutButtons
-              contacts={whatsappContacts.map((contact) => ({
-                ...contact,
-                label: contact.label,
-              }))}
-              message={message}
               items={items}
               customer={customer}
+              whatsappMessage={message}
               onCompleted={handleCheckoutCompleted}
             />
           ) : (
