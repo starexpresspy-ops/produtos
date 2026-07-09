@@ -8,7 +8,7 @@ import type { OrderStatus } from "@/types/order";
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   pending: "Aguardando confirmacao",
-  confirmed: "Confirmado",
+  confirmed: "Pagamento confirmado",
 };
 
 function formatDate(value: string) {

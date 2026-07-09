@@ -3,9 +3,73 @@
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { confirmOrder, deleteOrder } from "@/actions/admin/orders";
-import { adminButtonPrimary, adminButtonSecondary } from "@/lib/ui/admin-buttons";
+import {
+  adminButtonCompactDanger,
+  adminButtonCompactPrimary,
+  adminButtonPrimary,
+  adminButtonSecondary,
+} from "@/lib/ui/admin-buttons";
 import type { ActionResult } from "@/types/actions";
 import type { OrderStatus } from "@/types/order";
+
+export function OrderListActions({
+  orderId,
+  status,
+}: {
+  orderId: string;
+  status: OrderStatus;
+}) {
+  const router = useRouter();
+  const [confirmState, confirmAction, confirmPending] = useActionState<
+    ActionResult,
+    FormData
+  >(async () => confirmOrder(orderId), {});
+
+  const [deleteState, deleteAction, deletePending] = useActionState<
+    ActionResult,
+    FormData
+  >(async () => deleteOrder(orderId), {});
+
+  useEffect(() => {
+    if (confirmState?.success || deleteState?.success) {
+      router.refresh();
+    }
+  }, [confirmState?.success, deleteState?.success, router]);
+
+  const error = confirmState?.error || deleteState?.error;
+
+  return (
+    <div className="space-y-2">
+      {error ? <p className="text-danger max-w-xs text-xs">{error}</p> : null}
+
+      <div className="flex flex-wrap gap-2">
+        {status === "pending" ? (
+          <form action={confirmAction}>
+            <button
+              type="submit"
+              disabled={confirmPending}
+              className={adminButtonCompactPrimary}
+            >
+              {confirmPending ? "Confirmando..." : "Pagamento confirmado"}
+            </button>
+          </form>
+        ) : null}
+
+        {status === "confirmed" ? (
+          <form action={deleteAction}>
+            <button
+              type="submit"
+              disabled={deletePending}
+              className={adminButtonCompactDanger}
+            >
+              {deletePending ? "Excluindo..." : "Excluir pedido"}
+            </button>
+          </form>
+        ) : null}
+      </div>
+    </div>
+  );
+}
 
 export function OrderActions({
   orderId,
@@ -49,7 +113,7 @@ export function OrderActions({
 
       {confirmState?.success ? (
         <div className="bg-primary/10 text-primary rounded-lg px-4 py-3 text-sm">
-          Pedido confirmado com sucesso.
+          Pagamento confirmado com sucesso.
         </div>
       ) : null}
 
@@ -57,7 +121,7 @@ export function OrderActions({
         {status === "pending" ? (
           <form action={confirmAction}>
             <button type="submit" disabled={confirmPending} className={adminButtonPrimary}>
-              {confirmPending ? "Confirmando..." : "Confirmar pedido"}
+              {confirmPending ? "Confirmando..." : "Pagamento confirmado"}
             </button>
           </form>
         ) : null}
@@ -69,7 +133,7 @@ export function OrderActions({
               disabled={deletePending}
               className={adminButtonSecondary}
             >
-              {deletePending ? "Apagando..." : "Apagar pedido"}
+              {deletePending ? "Excluindo..." : "Excluir pedido"}
             </button>
           </form>
         ) : null}

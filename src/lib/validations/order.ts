@@ -1,14 +1,9 @@
 import { z } from "zod";
 
-const orderItemSchema = z.object({
+const orderItemInputSchema = z.object({
   productId: z.string().uuid(),
   productName: z.string().min(1),
-  productSlug: z.string().optional(),
-  sku: z.string().nullable().optional(),
-  shortDescription: z.string().nullable().optional(),
-  unitPrice: z.number().positive(),
   quantity: z.number().int().positive(),
-  subtotal: z.number().positive(),
 });
 
 export const createOrderSchema = z.object({
@@ -18,7 +13,31 @@ export const createOrderSchema = z.object({
     .min(10, "Informe um telefone valido.")
     .transform((value) => value.replace(/\D/g, "")),
   customerAddress: z.string().min(10, "Informe o endereco completo."),
-  total: z.number().positive(),
   whatsappMessage: z.string().min(1),
-  items: z.array(orderItemSchema).min(1, "O pedido precisa ter ao menos um item."),
+  items: z.array(orderItemInputSchema).min(1, "O pedido precisa ter ao menos um item."),
 });
+
+export function mapOrderCreationError(message: string) {
+  if (message.includes("ORDER_EMPTY")) {
+    return "O pedido precisa ter ao menos um item.";
+  }
+  if (message.includes("ORDER_INVALID_QTY")) {
+    return "Quantidade invalida em um dos produtos.";
+  }
+  if (message.includes("ORDER_UNAVAILABLE:")) {
+    const product = message.split("ORDER_UNAVAILABLE:")[1]?.trim();
+    return product
+      ? `O produto "${product}" nao esta mais disponivel.`
+      : "Um dos produtos nao esta mais disponivel.";
+  }
+  if (message.includes("ORDER_OUT_OF_STOCK:")) {
+    const product = message.split("ORDER_OUT_OF_STOCK:")[1]?.trim();
+    return product
+      ? `Estoque insuficiente para "${product}". Outro cliente pode ter reservado as ultimas unidades.`
+      : "Estoque insuficiente para um dos produtos. Tente novamente.";
+  }
+  if (message.includes("row-level security") || message.includes("permission denied")) {
+    return "Nao foi possivel registrar o pedido. Verifique as migrations de pedidos no Supabase.";
+  }
+  return message || "Nao foi possivel registrar o pedido.";
+}

@@ -12,6 +12,16 @@ export const adminButtonSecondary = cn(
   "border-primary/25 text-primary hover:bg-primary/5 bg-surface disabled:opacity-60",
 );
 
+export const adminButtonCompactPrimary = cn(
+  adminButtonPrimary,
+  "px-3 py-1.5 text-xs shadow-none",
+);
+
+export const adminButtonCompactDanger = cn(
+  "inline-flex items-center justify-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60",
+  "border-danger/30 text-danger hover:bg-danger/10 bg-surface",
+);
+
 export const adminNavActive = "bg-primary !text-white";
 export const adminNavItem =
   "text-foreground hover:bg-background flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors";

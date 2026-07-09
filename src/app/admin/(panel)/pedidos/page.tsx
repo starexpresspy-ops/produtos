@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { getAdminOrdersList } from "@/services/admin/orders";
+import { OrderListActions } from "@/components/admin/OrderActions";
 import { formatCurrency } from "@/lib/formatters/currency";
 import type { OrderStatus } from "@/types/order";
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   pending: "Aguardando confirmacao",
-  confirmed: "Confirmado",
+  confirmed: "Pagamento confirmado",
 };
 
 function formatDate(value: string) {
@@ -67,12 +68,15 @@ export default async function AdminOrdersPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <Link
-                      href={`/admin/pedidos/${order.id}`}
-                      className="text-primary font-semibold"
-                    >
-                      Ver detalhes
-                    </Link>
+                    <div className="space-y-2">
+                      <Link
+                        href={`/admin/pedidos/${order.id}`}
+                        className="text-primary text-sm font-semibold hover:underline"
+                      >
+                        Ver detalhes
+                      </Link>
+                      <OrderListActions orderId={order.id} status={order.status} />
+                    </div>
                   </td>
                 </tr>
               ))}

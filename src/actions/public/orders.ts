@@ -2,9 +2,8 @@
 
 import { createOrdersClient } from "@/lib/supabase/orders-client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
-import { createOrderSchema } from "@/lib/validations/order";
+import { createOrderSchema, mapOrderCreationError } from "@/lib/validations/order";
 import type { CartCustomerInfo, CartItem } from "@/types/cart";
-import { getCartTotal, getLineTotal } from "@/lib/cart";
 import type { ActionResult } from "@/types/actions";
 
 export async function createOrderFromCart(input: {
@@ -26,23 +25,15 @@ export async function createOrderFromCart(input: {
     };
   }
 
-  const total = getCartTotal(input.items);
-
   const parsed = createOrderSchema.safeParse({
     customerName: input.customer.name,
     customerPhone: input.customer.phone,
     customerAddress: input.customer.address,
-    total,
     whatsappMessage: input.whatsappMessage,
     items: input.items.map((item) => ({
       productId: item.productId,
       productName: item.name,
-      productSlug: item.slug,
-      sku: item.sku,
-      shortDescription: item.shortDescription,
-      unitPrice: item.unitPrice,
       quantity: item.quantity,
-      subtotal: getLineTotal(item),
     })),
   });
 
@@ -50,48 +41,21 @@ export async function createOrderFromCart(input: {
     return { error: parsed.error.issues[0]?.message ?? "Dados do pedido invalidos." };
   }
 
-  const { data: order, error: orderError } = await supabase
-    .from("orders")
-    .insert({
-      customer_name: parsed.data.customerName,
-      customer_phone: parsed.data.customerPhone,
-      customer_address: parsed.data.customerAddress,
-      total: parsed.data.total,
-      whatsapp_message: parsed.data.whatsappMessage,
-      status: "pending",
-    })
-    .select("id")
-    .single();
-
-  if (orderError || !order) {
-    const raw = orderError?.message ?? "";
-    if (raw.includes("row-level security") || raw.includes("permission denied")) {
-      return {
-        error:
-          "Nao foi possivel registrar o pedido. Verifique se as migrations de pedidos foram aplicadas no Supabase.",
-      };
-    }
-    return { error: raw || "Nao foi possivel registrar o pedido." };
-  }
-
-  const { error: itemsError } = await supabase.from("order_items").insert(
-    parsed.data.items.map((item) => ({
-      order_id: order.id,
+  const { data: orderId, error: orderError } = await supabase.rpc("create_public_order", {
+    p_customer_name: parsed.data.customerName,
+    p_customer_phone: parsed.data.customerPhone,
+    p_customer_address: parsed.data.customerAddress,
+    p_whatsapp_message: parsed.data.whatsappMessage,
+    p_items: parsed.data.items.map((item) => ({
       product_id: item.productId,
       product_name: item.productName,
-      product_slug: item.productSlug ?? null,
-      sku: item.sku ?? null,
-      short_description: item.shortDescription ?? null,
-      unit_price: item.unitPrice,
       quantity: item.quantity,
-      subtotal: item.subtotal,
     })),
-  );
+  });
 
-  if (itemsError) {
-    await supabase.from("orders").delete().eq("id", order.id);
-    return { error: itemsError.message };
+  if (orderError || !orderId) {
+    return { error: mapOrderCreationError(orderError?.message ?? "") };
   }
 
-  return { success: true, orderId: order.id };
+  return { success: true, orderId: orderId as string };
 }
