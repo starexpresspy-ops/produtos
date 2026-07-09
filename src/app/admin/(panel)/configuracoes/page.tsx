@@ -1,13 +1,15 @@
 import { StoreSettingsForm } from "@/components/admin/StoreSettingsForm";
 import { StoreMaintenancePanel } from "@/components/admin/StoreMaintenancePanel";
+import { VisitIpMapPanel } from "@/components/admin/VisitIpMapPanel";
 import { getDefaultStoreSettingsForForm } from "@/actions/admin/settings";
-import { DEFAULT_MAINTENANCE_MESSAGE } from "@/constants/store";
 import { getAdminMaintenanceState, getAdminStoreSettings } from "@/services/admin/settings";
+import { getStorefrontVisitLogs } from "@/services/admin/visit-logs";
 import { SupabaseSetupBanner } from "@/components/admin/SupabaseSetupBanner";
 
 export default async function AdminSettingsPage() {
   const row = await getAdminStoreSettings();
   const maintenance = await getAdminMaintenanceState();
+  const visitLogs = await getStorefrontVisitLogs();
   const defaults = await getDefaultStoreSettingsForForm();
 
   const settings = row
@@ -43,6 +45,8 @@ export default async function AdminSettingsPage() {
       />
 
       <StoreSettingsForm settings={settings} />
+
+      <VisitIpMapPanel logs={visitLogs.logs} tableMissing={visitLogs.tableMissing} />
     </div>
   );
 }
