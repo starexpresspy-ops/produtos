@@ -28,7 +28,8 @@ export function OrderConfirmationView({
             <CheckCircle2 className="h-8 w-8" aria-hidden />
           </div>
           <h1 className="text-foreground text-3xl font-bold tracking-tight">
-            Pedido {formatOrderNumber(order.orderNumber)} registrado
+            Pedido
+            {order.orderNumber ? ` ${formatOrderNumber(order.orderNumber)}` : ""} registrado
           </h1>
           <p className="text-muted mt-2 text-sm">
             Revise seus dados e os itens abaixo. Em seguida, envie o pedido pelo

@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { ProductVialPlaceholder } from "@/components/shared/ProductVialPlaceholder";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
@@ -134,9 +133,7 @@ export function CartView() {
                         className="object-contain p-1"
                         sizes="80px"
                       />
-                    ) : (
-                      <ProductVialPlaceholder name={item.name} />
-                    )}
+                    ) : null}
                   </div>
                   <div className="min-w-0">
                     <Link
