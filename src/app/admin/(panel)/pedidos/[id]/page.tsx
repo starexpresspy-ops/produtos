@@ -4,6 +4,8 @@ import { ChevronRight } from "lucide-react";
 import { getAdminOrderById } from "@/services/admin/orders";
 import { OrderActions } from "@/components/admin/OrderActions";
 import { formatCurrency } from "@/lib/formatters/currency";
+import { formatOrderNumber } from "@/lib/formatters/order-number";
+import { getOrderItemsSubtotal, getOrderShippingFee } from "@/lib/cart";
 import type { OrderStatus } from "@/types/order";
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
@@ -27,6 +29,9 @@ export default async function AdminOrderDetailPage({
   const order = await getAdminOrderById(id);
   if (!order) notFound();
 
+  const itemsSubtotal = getOrderItemsSubtotal(order.items ?? []);
+  const shippingFee = getOrderShippingFee(order.items ?? [], order.total);
+
   return (
     <div className="space-y-8">
       <nav className="text-muted flex flex-wrap items-center gap-1 text-sm">
@@ -34,12 +39,14 @@ export default async function AdminOrderDetailPage({
           Pedidos
         </Link>
         <ChevronRight className="h-4 w-4" />
-        <span className="text-foreground">{order.customerName}</span>
+        <span className="text-foreground">{formatOrderNumber(order.orderNumber)}</span>
       </nav>
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-foreground text-2xl font-bold">Pedido</h1>
+          <h1 className="text-foreground text-2xl font-bold">
+            Pedido {formatOrderNumber(order.orderNumber)}
+          </h1>
           <p className="text-muted mt-1 text-sm">{formatDate(order.createdAt)}</p>
         </div>
         <span
@@ -74,7 +81,21 @@ export default async function AdminOrderDetailPage({
 
         <section className="border-border bg-surface rounded-[var(--radius-card)] border p-6">
           <h2 className="text-foreground mb-4 text-lg font-semibold">Resumo</h2>
-          <p className="text-primary text-3xl font-extrabold">
+          <div className="space-y-2 text-sm">
+            <div className="text-muted flex items-center justify-between gap-4">
+              <span>Subtotal dos produtos</span>
+              <span className="text-foreground font-medium">
+                {formatCurrency(itemsSubtotal)}
+              </span>
+            </div>
+            <div className="text-muted flex items-center justify-between gap-4">
+              <span>Frete</span>
+              <span className="text-foreground font-medium">
+                {formatCurrency(shippingFee)}
+              </span>
+            </div>
+          </div>
+          <p className="text-primary mt-4 text-3xl font-extrabold">
             {formatCurrency(order.total)}
           </p>
           {order.confirmedAt ? (

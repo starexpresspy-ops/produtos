@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import { ProductVialPlaceholder } from "@/components/shared/ProductVialPlaceholder";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { CART_CUSTOMER_STORAGE_KEY } from "@/constants/cart";
-import { getLineTotal, getMaxQuantity } from "@/lib/cart";
+import { getLineTotal, getMaxQuantity, getCartGrandTotal, getCartShippingFee } from "@/lib/cart";
 import { formatCurrency } from "@/lib/formatters/currency";
 import { buildCartMessage } from "@/lib/whatsapp";
 import { CartCheckoutButtons } from "@/components/public/CartCheckoutButtons";
@@ -130,10 +131,12 @@ export function CartView() {
                         src={item.imageUrl}
                         alt={item.name}
                         fill
-                        className="object-cover"
+                        className="object-contain p-1"
                         sizes="80px"
                       />
-                    ) : null}
+                    ) : (
+                      <ProductVialPlaceholder name={item.name} />
+                    )}
                   </div>
                   <div className="min-w-0">
                     <Link
@@ -246,9 +249,23 @@ export function CartView() {
       </div>
 
       <div className="border-border bg-surface rounded-[var(--radius-card)] border p-6">
-        <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="mb-4 space-y-2 text-sm">
+          <div className="text-muted flex items-center justify-between gap-4">
+            <span>Subtotal dos produtos</span>
+            <span className="text-foreground font-medium">{formatCurrency(total)}</span>
+          </div>
+          <div className="text-muted flex items-center justify-between gap-4">
+            <span>Frete</span>
+            <span className="text-foreground font-medium">
+              {formatCurrency(getCartShippingFee())}
+            </span>
+          </div>
+        </div>
+        <div className="border-border mb-6 flex items-center justify-between gap-4 border-t pt-4">
           <span className="text-foreground text-lg font-semibold">Total do pedido</span>
-          <span className="text-primary text-2xl font-extrabold">{formatCurrency(total)}</span>
+          <span className="text-primary text-2xl font-extrabold">
+            {formatCurrency(getCartGrandTotal(items))}
+          </span>
         </div>
 
         <div className="mb-6 space-y-3">

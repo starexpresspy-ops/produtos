@@ -3,6 +3,10 @@
 import { createOrdersClient } from "@/lib/supabase/orders-client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createOrderSchema, mapOrderCreationError } from "@/lib/validations/order";
+import {
+  createPublicOrder,
+  OrderCreationError,
+} from "@/lib/orders/create-public-order";
 import type { CartCustomerInfo, CartItem } from "@/types/cart";
 import type { ActionResult } from "@/types/actions";
 
@@ -41,21 +45,22 @@ export async function createOrderFromCart(input: {
     return { error: parsed.error.issues[0]?.message ?? "Dados do pedido invalidos." };
   }
 
-  const { data: orderId, error: orderError } = await supabase.rpc("create_public_order", {
-    p_customer_name: parsed.data.customerName,
-    p_customer_phone: parsed.data.customerPhone,
-    p_customer_address: parsed.data.customerAddress,
-    p_whatsapp_message: parsed.data.whatsappMessage,
-    p_items: parsed.data.items.map((item) => ({
-      product_id: item.productId,
-      product_name: item.productName,
-      quantity: item.quantity,
-    })),
-  });
+  try {
+    const orderId = await createPublicOrder(supabase, {
+      customerName: parsed.data.customerName,
+      customerPhone: parsed.data.customerPhone,
+      customerAddress: parsed.data.customerAddress,
+      whatsappMessage: parsed.data.whatsappMessage,
+      items: parsed.data.items,
+    });
 
-  if (orderError || !orderId) {
-    return { error: mapOrderCreationError(orderError?.message ?? "") };
+    return { success: true, orderId };
+  } catch (error) {
+    if (error instanceof OrderCreationError) {
+      return { error: mapOrderCreationError(error.message) };
+    }
+
+    const message = error instanceof Error ? error.message : "";
+    return { error: mapOrderCreationError(message) };
   }
-
-  return { success: true, orderId: orderId as string };
 }

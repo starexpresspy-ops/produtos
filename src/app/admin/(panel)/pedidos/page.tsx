@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getAdminOrdersList } from "@/services/admin/orders";
 import { OrderListActions } from "@/components/admin/OrderActions";
 import { formatCurrency } from "@/lib/formatters/currency";
+import { formatOrderNumber } from "@/lib/formatters/order-number";
 import type { OrderStatus } from "@/types/order";
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
@@ -37,6 +38,7 @@ export default async function AdminOrdersPage() {
           <table className="w-full text-left text-sm">
             <thead className="border-border bg-background border-b">
               <tr>
+                <th className="px-4 py-3 font-semibold">Pedido</th>
                 <th className="px-4 py-3 font-semibold">Data</th>
                 <th className="px-4 py-3 font-semibold">Cliente</th>
                 <th className="px-4 py-3 font-semibold">Telefone</th>
@@ -48,6 +50,9 @@ export default async function AdminOrdersPage() {
             <tbody className="divide-border divide-y">
               {orders.map((order) => (
                 <tr key={order.id} className="hover:bg-background/50">
+                  <td className="text-foreground px-4 py-3 font-semibold">
+                    {formatOrderNumber(order.orderNumber)}
+                  </td>
                   <td className="text-muted px-4 py-3">{formatDate(order.createdAt)}</td>
                   <td className="text-foreground px-4 py-3 font-medium">
                     {order.customerName}

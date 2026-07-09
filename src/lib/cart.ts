@@ -1,4 +1,4 @@
-import { CART_MAX_QUANTITY } from "@/constants/cart";
+import { CART_MAX_QUANTITY, CART_SHIPPING_FEE } from "@/constants/cart";
 import type { CartItem } from "@/types/cart";
 import type { ProductWithRelations } from "@/types";
 
@@ -8,6 +8,29 @@ export function getLineTotal(item: CartItem) {
 
 export function getCartTotal(items: CartItem[]) {
   return items.reduce((sum, item) => sum + getLineTotal(item), 0);
+}
+
+export function getCartShippingFee() {
+  return CART_SHIPPING_FEE;
+}
+
+export function getCartGrandTotal(items: CartItem[]) {
+  return getCartTotal(items) + getCartShippingFee();
+}
+
+export function getOrderItemsSubtotal(
+  items: Array<{ subtotal: number }>,
+) {
+  return items.reduce((sum, item) => sum + item.subtotal, 0);
+}
+
+export function getOrderShippingFee(
+  items: Array<{ subtotal: number }>,
+  orderTotal: number,
+) {
+  const itemsSubtotal = getOrderItemsSubtotal(items);
+  const shipping = orderTotal - itemsSubtotal;
+  return shipping > 0 ? shipping : CART_SHIPPING_FEE;
 }
 
 export function getCartItemCount(items: CartItem[]) {

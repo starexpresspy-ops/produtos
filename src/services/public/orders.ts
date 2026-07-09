@@ -35,7 +35,7 @@ export async function getPublicOrderById(id: string): Promise<Order | null> {
   const { data: order, error } = await supabase
     .from("orders")
     .select(
-      "id, customer_name, customer_phone, customer_address, status, total, whatsapp_message, created_at, confirmed_at",
+      "id, order_number, customer_name, customer_phone, customer_address, status, total, whatsapp_message, created_at, confirmed_at",
     )
     .eq("id", id)
     .eq("status", "pending")
@@ -56,6 +56,7 @@ export async function getPublicOrderById(id: string): Promise<Order | null> {
 
   return {
     id: order.id,
+    orderNumber: Number(order.order_number),
     customerName: order.customer_name,
     customerPhone: order.customer_phone,
     customerAddress: order.customer_address,

@@ -39,5 +39,8 @@ export function mapOrderCreationError(message: string) {
   if (message.includes("row-level security") || message.includes("permission denied")) {
     return "Nao foi possivel registrar o pedido. Verifique as migrations de pedidos no Supabase.";
   }
+  if (message.includes("create_public_order") || message.includes("schema cache")) {
+    return "Nao foi possivel registrar o pedido. Execute as migrations de pedidos no Supabase.";
+  }
   return message || "Nao foi possivel registrar o pedido.";
 }

@@ -1,7 +1,7 @@
 import { formatCurrency } from "@/lib/formatters/currency";
 import type { CartCustomerInfo, CartItem } from "@/types/cart";
 import type { ProductWithRelations, StoreSettings } from "@/types";
-import { getLineTotal, getCartTotal } from "@/lib/cart";
+import { getLineTotal, getCartTotal, getCartShippingFee, getCartGrandTotal } from "@/lib/cart";
 import { SITE_URL } from "@/constants/store";
 
 export interface WhatsappContact {
@@ -114,7 +114,9 @@ export function buildCartMessage(
     lines.push("");
   });
 
-  lines.push(`Total do pedido: ${formatCurrency(getCartTotal(items))}`);
+  lines.push(`Subtotal dos produtos: ${formatCurrency(getCartTotal(items))}`);
+  lines.push(`Frete: ${formatCurrency(getCartShippingFee())}`);
+  lines.push(`Total do pedido: ${formatCurrency(getCartGrandTotal(items))}`);
   lines.push("", "Pode confirmar disponibilidade e forma de pagamento?");
   return lines.join("\n");
 }

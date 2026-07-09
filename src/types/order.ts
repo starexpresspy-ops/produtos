@@ -15,6 +15,7 @@ export interface OrderItem {
 
 export interface Order {
   id: string;
+  orderNumber: number;
   customerName: string;
   customerPhone: string;
   customerAddress: string;

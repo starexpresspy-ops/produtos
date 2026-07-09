@@ -32,6 +32,7 @@ function mapOrderItem(row: {
 function mapOrder(
   row: {
     id: string;
+    order_number: number;
     customer_name: string;
     customer_phone: string;
     customer_address: string;
@@ -45,6 +46,7 @@ function mapOrder(
 ): Order {
   return {
     id: row.id,
+    orderNumber: Number(row.order_number),
     customerName: row.customer_name,
     customerPhone: row.customer_phone,
     customerAddress: row.customer_address,
@@ -64,7 +66,7 @@ export async function getAdminOrdersList(): Promise<Order[]> {
   const { data, error } = await supabase
     .from("orders")
     .select(
-      "id, customer_name, customer_phone, customer_address, status, total, whatsapp_message, created_at, confirmed_at",
+      "id, order_number, customer_name, customer_phone, customer_address, status, total, whatsapp_message, created_at, confirmed_at",
     )
     .order("created_at", { ascending: false });
 
@@ -83,7 +85,7 @@ export async function getAdminOrderById(id: string): Promise<Order | null> {
   const { data: order, error } = await supabase
     .from("orders")
     .select(
-      "id, customer_name, customer_phone, customer_address, status, total, whatsapp_message, created_at, confirmed_at",
+      "id, order_number, customer_name, customer_phone, customer_address, status, total, whatsapp_message, created_at, confirmed_at",
     )
     .eq("id", id)
     .maybeSingle();

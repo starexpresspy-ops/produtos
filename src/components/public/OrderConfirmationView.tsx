@@ -4,6 +4,8 @@ import { Container } from "@/components/ui/Container";
 import { ResponsibilityNotice } from "@/components/shared/ResponsibilityNotice";
 import { WhatsappButtons } from "@/components/shared/WhatsappButtons";
 import { formatCurrency } from "@/lib/formatters/currency";
+import { formatOrderNumber } from "@/lib/formatters/order-number";
+import { getOrderItemsSubtotal, getOrderShippingFee } from "@/lib/cart";
 import type { Order } from "@/types/order";
 import type { WhatsappContact } from "@/lib/whatsapp";
 
@@ -15,6 +17,8 @@ export function OrderConfirmationView({
   whatsappContacts: WhatsappContact[];
 }) {
   const message = order.whatsappMessage ?? "";
+  const itemsSubtotal = getOrderItemsSubtotal(order.items ?? []);
+  const shippingFee = getOrderShippingFee(order.items ?? [], order.total);
 
   return (
     <Container className="py-8">
@@ -24,7 +28,7 @@ export function OrderConfirmationView({
             <CheckCircle2 className="h-8 w-8" aria-hidden />
           </div>
           <h1 className="text-foreground text-3xl font-bold tracking-tight">
-            Pedido registrado
+            Pedido {formatOrderNumber(order.orderNumber)} registrado
           </h1>
           <p className="text-muted mt-2 text-sm">
             Revise seus dados e os itens abaixo. Em seguida, envie o pedido pelo
@@ -91,11 +95,27 @@ export function OrderConfirmationView({
               </li>
             ))}
           </ul>
-          <div className="border-border bg-background flex items-center justify-between border-t px-4 py-4">
-            <span className="text-foreground text-lg font-semibold">Total do pedido</span>
-            <span className="text-primary text-2xl font-extrabold">
-              {formatCurrency(order.total)}
-            </span>
+          <div className="border-border bg-background border-t px-4 py-4">
+            <div className="space-y-2 text-sm">
+              <div className="text-muted flex items-center justify-between gap-4">
+                <span>Subtotal dos produtos</span>
+                <span className="text-foreground font-medium">
+                  {formatCurrency(itemsSubtotal)}
+                </span>
+              </div>
+              <div className="text-muted flex items-center justify-between gap-4">
+                <span>Frete</span>
+                <span className="text-foreground font-medium">
+                  {formatCurrency(shippingFee)}
+                </span>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center justify-between gap-4">
+              <span className="text-foreground text-lg font-semibold">Total do pedido</span>
+              <span className="text-primary text-2xl font-extrabold">
+                {formatCurrency(order.total)}
+              </span>
+            </div>
           </div>
         </section>
 
