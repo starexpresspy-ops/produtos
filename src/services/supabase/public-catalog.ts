@@ -9,6 +9,7 @@ import {
   STORE_SETTINGS_WITH_SECONDARY_SELECT,
   type StoreSettingsRow,
 } from "@/lib/supabase/store-settings-shared";
+import { enrichStoreSettingsWithMaintenance } from "@/lib/store/maintenance-state";
 import { mapDbProduct } from "@/lib/supabase/product-mappers";
 import type {
   Brand,
@@ -90,6 +91,7 @@ function mapBrandRow(b: {
 
 export async function fetchStoreSettings(): Promise<StoreSettings | null> {
   const supabase = createPublicClient();
+  let hasDbMaintenanceColumns = true;
 
   let { data, error } = await supabase
     .from("store_settings")
@@ -98,6 +100,7 @@ export async function fetchStoreSettings(): Promise<StoreSettings | null> {
     .maybeSingle();
 
   if (isMissingMaintenanceColumnsError(error?.message)) {
+    hasDbMaintenanceColumns = false;
     ({ data, error } = await supabase
       .from("store_settings")
       .select(STORE_SETTINGS_WITH_SECONDARY_SELECT)
@@ -120,7 +123,12 @@ export async function fetchStoreSettings(): Promise<StoreSettings | null> {
 
   if (!data) return null;
 
-  return mapStoreSettingsRow(data as StoreSettingsRow);
+  const settings = mapStoreSettingsRow(data as StoreSettingsRow);
+  return enrichStoreSettingsWithMaintenance(
+    supabase,
+    settings,
+    hasDbMaintenanceColumns,
+  );
 }
 
 export async function fetchCategories(): Promise<Category[]> {

@@ -2,11 +2,12 @@ import { StoreSettingsForm } from "@/components/admin/StoreSettingsForm";
 import { StoreMaintenancePanel } from "@/components/admin/StoreMaintenancePanel";
 import { getDefaultStoreSettingsForForm } from "@/actions/admin/settings";
 import { DEFAULT_MAINTENANCE_MESSAGE } from "@/constants/store";
-import { getAdminStoreSettings } from "@/services/admin/settings";
+import { getAdminMaintenanceState, getAdminStoreSettings } from "@/services/admin/settings";
 import { SupabaseSetupBanner } from "@/components/admin/SupabaseSetupBanner";
 
 export default async function AdminSettingsPage() {
   const row = await getAdminStoreSettings();
+  const maintenance = await getAdminMaintenanceState();
   const defaults = await getDefaultStoreSettingsForForm();
 
   const settings = row
@@ -23,8 +24,6 @@ export default async function AdminSettingsPage() {
         warrantyText: row.warranty_text ?? "",
         exchangePolicy: row.exchange_policy ?? "",
         businessHours: row.business_hours ?? "",
-        maintenanceMode: Boolean(row.maintenance_mode),
-        maintenanceMessage: row.maintenance_message?.trim() || DEFAULT_MAINTENANCE_MESSAGE,
       }
     : defaults;
 
@@ -39,8 +38,8 @@ export default async function AdminSettingsPage() {
       </div>
 
       <StoreMaintenancePanel
-        maintenanceMode={settings.maintenanceMode ?? false}
-        maintenanceMessage={settings.maintenanceMessage ?? DEFAULT_MAINTENANCE_MESSAGE}
+        maintenanceMode={maintenance.maintenanceMode}
+        maintenanceMessage={maintenance.maintenanceMessage}
       />
 
       <StoreSettingsForm settings={settings} />

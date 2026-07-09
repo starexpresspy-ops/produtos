@@ -7,6 +7,8 @@ import { revalidateStorefront } from "@/lib/catalog/revalidate";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { storeSettingsFormSchema, storeMaintenanceSchema } from "@/lib/validations/store-settings";
 import { isMissingMaintenanceColumnsError, isMissingSecondaryColumnsError } from "@/lib/supabase/store-settings-shared";
+import { writeMaintenanceToStorage } from "@/lib/store/maintenance-state";
+import { createServiceClient, isSupabaseServiceConfigured } from "@/lib/supabase/service";
 import { DEFAULT_MAINTENANCE_MESSAGE, STORE } from "@/constants/store";
 import type { ActionResult } from "@/types/actions";
 
@@ -137,11 +139,26 @@ export async function setStoreMaintenance(
 
   if (error) {
     if (isMissingMaintenanceColumnsError(error.message)) {
-      return {
-        error:
-          "Execute a migration de manutencao no Supabase (20260713_store_maintenance.sql).",
-      };
+      const storageClient = isSupabaseServiceConfigured()
+        ? createServiceClient()
+        : supabase;
+      const storageResult = await writeMaintenanceToStorage(storageClient, {
+        enabled: parsed.data.enabled,
+        message: parsed.data.message,
+      });
+
+      if (storageResult.error) {
+        return {
+          error:
+            "Nao foi possivel salvar o modo manutencao. Execute supabase/migrations/20260713_store_maintenance.sql no Supabase ou verifique permissoes do storage.",
+        };
+      }
+
+      revalidatePath("/admin/configuracoes");
+      revalidateStorefront();
+      return { success: true };
     }
+
     return { error: error.message };
   }
 

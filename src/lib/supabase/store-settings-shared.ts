@@ -30,7 +30,9 @@ export function isMissingSecondaryColumnsError(message?: string) {
 }
 
 export function isMissingMaintenanceColumnsError(message?: string) {
-  return Boolean(message?.includes("maintenance_mode"));
+  return Boolean(
+    message?.includes("maintenance_mode") || message?.includes("maintenance_message"),
+  );
 }
 
 export function mapStoreSettingsRow(row: StoreSettingsRow): StoreSettings {
