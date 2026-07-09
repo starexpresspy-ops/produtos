@@ -39,33 +39,31 @@ export function OrderListActions({
   const error = confirmState?.error || deleteState?.error;
 
   return (
-    <div className="space-y-2">
-      {error ? <p className="text-danger max-w-xs text-xs">{error}</p> : null}
+    <div className="space-y-1">
+      {error ? <p className="text-danger max-w-[140px] text-[10px] leading-tight">{error}</p> : null}
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1">
         {status === "pending" ? (
           <form action={confirmAction}>
             <button
               type="submit"
-              disabled={confirmPending}
+              disabled={confirmPending || deletePending}
               className={adminButtonCompactPrimary}
             >
-              {confirmPending ? "Confirmando..." : "Pagamento confirmado"}
+              {confirmPending ? "..." : "Pag. confirmado"}
             </button>
           </form>
         ) : null}
 
-        {status === "confirmed" ? (
-          <form action={deleteAction}>
-            <button
-              type="submit"
-              disabled={deletePending}
-              className={adminButtonCompactDanger}
-            >
-              {deletePending ? "Excluindo..." : "Excluir pedido"}
-            </button>
-          </form>
-        ) : null}
+        <form action={deleteAction}>
+          <button
+            type="submit"
+            disabled={deletePending || confirmPending}
+            className={adminButtonCompactDanger}
+          >
+            {deletePending ? "..." : "Excluir"}
+          </button>
+        </form>
       </div>
     </div>
   );
@@ -126,17 +124,15 @@ export function OrderActions({
           </form>
         ) : null}
 
-        {status === "confirmed" ? (
-          <form action={deleteAction}>
-            <button
-              type="submit"
-              disabled={deletePending}
-              className={adminButtonSecondary}
-            >
-              {deletePending ? "Excluindo..." : "Excluir pedido"}
-            </button>
-          </form>
-        ) : null}
+        <form action={deleteAction}>
+          <button
+            type="submit"
+            disabled={deletePending}
+            className={adminButtonSecondary}
+          >
+            {deletePending ? "Excluindo..." : "Excluir pedido"}
+          </button>
+        </form>
       </div>
     </div>
   );

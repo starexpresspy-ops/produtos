@@ -74,9 +74,6 @@ export async function deleteOrder(orderId: string): Promise<ActionResult> {
     .maybeSingle();
 
   if (!order) return { error: "Pedido nao encontrado." };
-  if (order.status !== "confirmed") {
-    return { error: "Confirme o pedido antes de apagar." };
-  }
 
   const { error } = await supabase.from("orders").delete().eq("id", orderId);
   if (error) return { error: error.message };

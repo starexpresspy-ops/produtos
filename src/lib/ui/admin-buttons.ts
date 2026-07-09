@@ -13,12 +13,12 @@ export const adminButtonSecondary = cn(
 );
 
 export const adminButtonCompactPrimary = cn(
-  adminButtonPrimary,
-  "px-3 py-1.5 text-xs shadow-none",
+  "inline-flex items-center justify-center rounded-md px-2 py-1 text-[11px] font-semibold leading-tight transition-colors",
+  "bg-accent hover:bg-accent-hover !text-white disabled:opacity-60",
 );
 
 export const adminButtonCompactDanger = cn(
-  "inline-flex items-center justify-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors disabled:opacity-60",
+  "inline-flex items-center justify-center rounded-md border px-2 py-1 text-[11px] font-semibold leading-tight transition-colors disabled:opacity-60",
   "border-danger/30 text-danger hover:bg-danger/10 bg-surface",
 );
 

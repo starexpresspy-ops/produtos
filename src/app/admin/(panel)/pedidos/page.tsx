@@ -68,10 +68,10 @@ export default async function AdminOrdersPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="space-y-2">
+                    <div className="flex min-w-[120px] flex-col gap-1.5">
                       <Link
                         href={`/admin/pedidos/${order.id}`}
-                        className="text-primary text-sm font-semibold hover:underline"
+                        className="text-primary text-[11px] font-semibold hover:underline"
                       >
                         Ver detalhes
                       </Link>
