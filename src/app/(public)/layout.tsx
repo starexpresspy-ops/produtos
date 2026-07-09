@@ -1,5 +1,6 @@
 import { Header } from "@/components/public/Header";
 import { Footer } from "@/components/public/Footer";
+import { MaintenanceView } from "@/components/public/MaintenanceView";
 import { PublicProviders } from "@/components/public/PublicProviders";
 import { getStoreSettings } from "@/services/catalog";
 import { getWhatsappContacts } from "@/lib/whatsapp";
@@ -13,6 +14,19 @@ export default async function PublicLayout({
 }) {
   const settings = await getStoreSettings();
   const whatsappContacts = getWhatsappContacts(settings);
+
+  if (settings.maintenanceMode) {
+    return (
+      <PublicProviders>
+        <main className="flex min-h-screen flex-1 flex-col">
+          <MaintenanceView
+            storeName={settings.storeName}
+            message={settings.maintenanceMessage}
+          />
+        </main>
+      </PublicProviders>
+    );
+  }
 
   return (
     <PublicProviders>

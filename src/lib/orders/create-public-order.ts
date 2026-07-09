@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { CART_SHIPPING_FEE } from "@/constants/cart";
+import { isMissingOrderNumberColumnError } from "@/lib/formatters/order-number";
 
 export type CreateOrderItemInput = {
   productId: string;
@@ -119,35 +120,41 @@ export async function createPublicOrder(
       whatsapp_message: input.whatsappMessage,
       status: "pending",
     })
-    .select("id")
-    .single();
+    .select("id, order_number")
+    .maybeSingle();
 
   if (orderError || !order) {
-    throw new Error(orderError?.message ?? "Nao foi possivel registrar o pedido.");
+    if (!isMissingOrderNumberColumnError(orderError?.message)) {
+      throw new Error(orderError?.message ?? "Nao foi possivel registrar o pedido.");
+    }
+
+    const { data: fallbackOrder, error: fallbackError } = await supabase
+      .from("orders")
+      .insert({
+        customer_name: input.customerName,
+        customer_phone: input.customerPhone,
+        customer_address: input.customerAddress,
+        total,
+        whatsapp_message: input.whatsappMessage,
+        status: "pending",
+      })
+      .select("id")
+      .single();
+
+    if (fallbackError || !fallbackOrder) {
+      throw new Error(fallbackError?.message ?? "Nao foi possivel registrar o pedido.");
+    }
+
+    await finalizeOrder(supabase, fallbackOrder.id, null, input.whatsappMessage, lines);
+    return fallbackOrder.id;
   }
 
-  const orderNumber = await readOrderNumber(supabase, order.id);
+  const orderNumber =
+    order.order_number != null ? Number(order.order_number) : null;
 
   await finalizeOrder(supabase, order.id, orderNumber, input.whatsappMessage, lines);
 
   return order.id;
-}
-
-async function readOrderNumber(
-  supabase: SupabaseClient,
-  orderId: string,
-): Promise<number | null> {
-  const { data, error } = await supabase
-    .from("orders")
-    .select("order_number")
-    .eq("id", orderId)
-    .maybeSingle();
-
-  if (error || data?.order_number == null) {
-    return null;
-  }
-
-  return Number(data.order_number);
 }
 
 async function finalizeOrder(

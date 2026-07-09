@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+export const storeMaintenanceSchema = z.object({
+  enabled: z.boolean(),
+  message: z
+    .string()
+    .max(500, "A mensagem pode ter no maximo 500 caracteres.")
+    .transform((value) => value.trim() || "Estamos em manutencao."),
+});
+
 const optionalText = z
   .string()
   .optional()

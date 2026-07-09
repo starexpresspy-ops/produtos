@@ -1,5 +1,10 @@
 import { createOrdersClient } from "@/lib/supabase/orders-client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import {
+  isMissingOrderNumberColumnError,
+  ORDER_LIST_SELECT_BASE,
+  ORDER_LIST_SELECT_WITH_NUMBER,
+} from "@/lib/formatters/order-number";
 import type { Order, OrderItem } from "@/types/order";
 
 function mapOrderItem(row: {
@@ -32,14 +37,23 @@ export async function getPublicOrderById(id: string): Promise<Order | null> {
   if (!isSupabaseConfigured()) return null;
 
   const supabase = createOrdersClient();
-  const { data: order, error } = await supabase
+  const primary = await supabase
     .from("orders")
-    .select(
-      "id, customer_name, customer_phone, customer_address, status, total, whatsapp_message, created_at, confirmed_at",
-    )
+    .select(ORDER_LIST_SELECT_WITH_NUMBER)
     .eq("id", id)
     .eq("status", "pending")
     .maybeSingle();
+
+  const result = isMissingOrderNumberColumnError(primary.error?.message)
+    ? await supabase
+        .from("orders")
+        .select(ORDER_LIST_SELECT_BASE)
+        .eq("id", id)
+        .eq("status", "pending")
+        .maybeSingle()
+    : primary;
+
+  const { data: order, error } = result;
 
   if (error || !order) {
     if (error) console.error("getPublicOrderById:", error.message);
@@ -56,7 +70,10 @@ export async function getPublicOrderById(id: string): Promise<Order | null> {
 
   return {
     id: order.id,
-    orderNumber: null,
+    orderNumber:
+      "order_number" in order && order.order_number != null
+        ? Number(order.order_number)
+        : null,
     customerName: order.customer_name,
     customerPhone: order.customer_phone,
     customerAddress: order.customer_address,

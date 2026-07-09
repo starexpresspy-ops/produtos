@@ -1,5 +1,7 @@
 import { StoreSettingsForm } from "@/components/admin/StoreSettingsForm";
+import { StoreMaintenancePanel } from "@/components/admin/StoreMaintenancePanel";
 import { getDefaultStoreSettingsForForm } from "@/actions/admin/settings";
+import { DEFAULT_MAINTENANCE_MESSAGE } from "@/constants/store";
 import { getAdminStoreSettings } from "@/services/admin/settings";
 import { SupabaseSetupBanner } from "@/components/admin/SupabaseSetupBanner";
 
@@ -21,6 +23,8 @@ export default async function AdminSettingsPage() {
         warrantyText: row.warranty_text ?? "",
         exchangePolicy: row.exchange_policy ?? "",
         businessHours: row.business_hours ?? "",
+        maintenanceMode: Boolean(row.maintenance_mode),
+        maintenanceMessage: row.maintenance_message?.trim() || DEFAULT_MAINTENANCE_MESSAGE,
       }
     : defaults;
 
@@ -33,6 +37,11 @@ export default async function AdminSettingsPage() {
           Dados exibidos na vitrine e nos canais de atendimento da loja.
         </p>
       </div>
+
+      <StoreMaintenancePanel
+        maintenanceMode={settings.maintenanceMode ?? false}
+        maintenanceMessage={settings.maintenanceMessage ?? DEFAULT_MAINTENANCE_MESSAGE}
+      />
 
       <StoreSettingsForm settings={settings} />
     </div>

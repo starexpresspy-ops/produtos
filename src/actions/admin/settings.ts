@@ -5,9 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/session";
 import { revalidateStorefront } from "@/lib/catalog/revalidate";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
-import { storeSettingsFormSchema } from "@/lib/validations/store-settings";
-import { isMissingSecondaryColumnsError } from "@/lib/supabase/store-settings-shared";
-import { STORE } from "@/constants/store";
+import { storeSettingsFormSchema, storeMaintenanceSchema } from "@/lib/validations/store-settings";
+import { isMissingMaintenanceColumnsError, isMissingSecondaryColumnsError } from "@/lib/supabase/store-settings-shared";
+import { DEFAULT_MAINTENANCE_MESSAGE, STORE } from "@/constants/store";
 import type { ActionResult } from "@/types/actions";
 
 export async function saveStoreSettings(
@@ -85,6 +85,71 @@ export async function saveStoreSettings(
   return { success: true };
 }
 
+export async function setStoreMaintenance(
+  formData: FormData,
+): Promise<ActionResult> {
+  if (!isSupabaseConfigured()) {
+    return { error: "Supabase nao configurado." };
+  }
+
+  const user = await getCurrentUser();
+  if (!user || user.profile.role !== "lojista") {
+    return { error: "Acesso negado." };
+  }
+
+  const parsed = storeMaintenanceSchema.safeParse({
+    enabled: formData.get("enabled") === "true",
+    message: formData.get("message"),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Dados invalidos." };
+  }
+
+  const supabase = await createClient();
+  const { data: existing } = await supabase
+    .from("store_settings")
+    .select("id")
+    .limit(1)
+    .maybeSingle();
+
+  const payload = {
+    maintenance_mode: parsed.data.enabled,
+    maintenance_message: parsed.data.message,
+  };
+
+  let error;
+  if (existing?.id) {
+    ({ error } = await supabase
+      .from("store_settings")
+      .update(payload)
+      .eq("id", existing.id));
+  } else {
+    const basePayload = {
+      store_name: STORE.name,
+      whatsapp_number: (
+        process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5500000000000"
+      ).replace(/\D/g, ""),
+      ...payload,
+    };
+    ({ error } = await supabase.from("store_settings").insert(basePayload));
+  }
+
+  if (error) {
+    if (isMissingMaintenanceColumnsError(error.message)) {
+      return {
+        error:
+          "Execute a migration de manutencao no Supabase (20260713_store_maintenance.sql).",
+      };
+    }
+    return { error: error.message };
+  }
+
+  revalidatePath("/admin/configuracoes");
+  revalidateStorefront();
+  return { success: true };
+}
+
 export async function getDefaultStoreSettingsForForm() {
   return {
     storeName: STORE.name,
@@ -99,5 +164,7 @@ export async function getDefaultStoreSettingsForForm() {
     warrantyText: "",
     exchangePolicy: "",
     businessHours: "",
+    maintenanceMode: false,
+    maintenanceMessage: DEFAULT_MAINTENANCE_MESSAGE,
   };
 }

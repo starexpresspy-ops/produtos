@@ -1,10 +1,12 @@
 import type { StoreSettings } from "@/types";
-import { STORE } from "@/constants/store";
+import { DEFAULT_MAINTENANCE_MESSAGE, STORE } from "@/constants/store";
 
 export const STORE_SETTINGS_BASE_SELECT =
   "store_name, whatsapp_number, whatsapp_message_template, instagram_url, contact_email, address_text, delivery_text, warranty_text, exchange_policy, business_hours";
 
-export const STORE_SETTINGS_FULL_SELECT = `${STORE_SETTINGS_BASE_SELECT}, whatsapp_number_secondary, whatsapp_secondary_label`;
+export const STORE_SETTINGS_WITH_SECONDARY_SELECT = `${STORE_SETTINGS_BASE_SELECT}, whatsapp_number_secondary, whatsapp_secondary_label`;
+
+export const STORE_SETTINGS_FULL_SELECT = `${STORE_SETTINGS_WITH_SECONDARY_SELECT}, maintenance_mode, maintenance_message`;
 
 export interface StoreSettingsRow {
   store_name: string;
@@ -19,10 +21,16 @@ export interface StoreSettingsRow {
   warranty_text: string | null;
   exchange_policy: string | null;
   business_hours: string | null;
+  maintenance_mode?: boolean | null;
+  maintenance_message?: string | null;
 }
 
 export function isMissingSecondaryColumnsError(message?: string) {
   return Boolean(message?.includes("whatsapp_number_secondary"));
+}
+
+export function isMissingMaintenanceColumnsError(message?: string) {
+  return Boolean(message?.includes("maintenance_mode"));
 }
 
 export function mapStoreSettingsRow(row: StoreSettingsRow): StoreSettings {
@@ -39,6 +47,8 @@ export function mapStoreSettingsRow(row: StoreSettingsRow): StoreSettings {
     warrantyText: row.warranty_text ?? undefined,
     exchangePolicy: row.exchange_policy ?? undefined,
     businessHours: row.business_hours ?? undefined,
+    maintenanceMode: Boolean(row.maintenance_mode),
+    maintenanceMessage: row.maintenance_message?.trim() || DEFAULT_MAINTENANCE_MESSAGE,
   };
 }
 
@@ -55,5 +65,7 @@ export function getEnvStoreSettings(): StoreSettings {
     warrantyText: undefined,
     exchangePolicy: undefined,
     businessHours: undefined,
+    maintenanceMode: false,
+    maintenanceMessage: DEFAULT_MAINTENANCE_MESSAGE,
   };
 }

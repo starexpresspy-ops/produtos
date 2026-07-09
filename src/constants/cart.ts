@@ -8,4 +8,4 @@ export const CART_MAX_QUANTITY = 99;
 export const CART_SHIPPING_FEE = 58;
 
 /** Tempo que o botao mantem o estado "Adicionado" apos incluir no carrinho. */
-export const CART_ADDED_FEEDBACK_MS = 4000;
+export const CART_ADDED_FEEDBACK_MS = 7000;

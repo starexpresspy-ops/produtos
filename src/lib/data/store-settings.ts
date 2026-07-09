@@ -12,4 +12,6 @@ export const DEMO_STORE_SETTINGS: StoreSettings = {
   warrantyText: "Garantia de 90 dias para defeitos de fabricacao.",
   exchangePolicy: "Trocas em ate 7 dias apos o recebimento.",
   businessHours: "Segunda a sabado, das 9h as 20h.",
+  maintenanceMode: false,
+  maintenanceMessage: "Estamos em manutencao.",
 };

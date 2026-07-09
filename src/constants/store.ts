@@ -8,3 +8,5 @@ export const SITE_URL =
 
 export const DEFAULT_WHATSAPP_MESSAGE =
   "Oi! Vim pela vitrine da Star Express e quero saber mais.";
+
+export const DEFAULT_MAINTENANCE_MESSAGE = "Estamos em manutencao.";

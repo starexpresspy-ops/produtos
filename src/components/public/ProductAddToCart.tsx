@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { CartAddedNotice } from "@/components/public/CartAddedNotice";
 import { clampQuantity, getMaxQuantity, productToCartItem } from "@/lib/cart";
 import type { ProductWithRelations } from "@/types";
 import { cn } from "@/lib/utils/cn";
@@ -73,12 +74,16 @@ export function ProductAddToCart({ product }: { product: ProductWithRelations })
         </span>
       </button>
 
-      <Link
-        href="/carrinho"
-        className="text-primary block text-center text-sm font-semibold hover:underline"
-      >
-        Ver carrinho
-      </Link>
+      {isAdded ? <CartAddedNotice /> : null}
+
+      {!isAdded ? (
+        <Link
+          href="/carrinho"
+          className="text-primary block text-center text-sm font-semibold hover:underline"
+        >
+          Ver carrinho
+        </Link>
+      ) : null}
     </div>
   );
 }

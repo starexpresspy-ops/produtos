@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { getAdminOrderById } from "@/services/admin/orders";
 import { OrderActions } from "@/components/admin/OrderActions";
 import { formatCurrency } from "@/lib/formatters/currency";
-import { formatOrderNumber } from "@/lib/formatters/order-number";
+import { formatOrderLabel } from "@/lib/formatters/order-number";
 import { getOrderItemsSubtotal, getOrderShippingFee } from "@/lib/cart";
 import type { OrderStatus } from "@/types/order";
 
@@ -39,13 +39,13 @@ export default async function AdminOrderDetailPage({
           Pedidos
         </Link>
         <ChevronRight className="h-4 w-4" />
-        <span className="text-foreground">{formatOrderNumber(order.orderNumber)}</span>
+        <span className="text-foreground">{formatOrderLabel(order)}</span>
       </nav>
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-foreground text-2xl font-bold">
-            Pedido {formatOrderNumber(order.orderNumber)}
+            Pedido {formatOrderLabel(order)}
           </h1>
           <p className="text-muted mt-1 text-sm">{formatDate(order.createdAt)}</p>
         </div>

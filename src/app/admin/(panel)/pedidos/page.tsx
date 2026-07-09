@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getAdminOrdersList } from "@/services/admin/orders";
 import { OrderListActions } from "@/components/admin/OrderActions";
 import { formatCurrency } from "@/lib/formatters/currency";
-import { formatOrderNumber } from "@/lib/formatters/order-number";
+import { formatOrderLabel } from "@/lib/formatters/order-number";
 import type { OrderStatus } from "@/types/order";
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
@@ -51,7 +51,7 @@ export default async function AdminOrdersPage() {
               {orders.map((order) => (
                 <tr key={order.id} className="hover:bg-background/50">
                   <td className="text-foreground px-4 py-3 font-semibold">
-                    {formatOrderNumber(order.orderNumber)}
+                    {formatOrderLabel(order)}
                   </td>
                   <td className="text-muted px-4 py-3">{formatDate(order.createdAt)}</td>
                   <td className="text-foreground px-4 py-3 font-medium">

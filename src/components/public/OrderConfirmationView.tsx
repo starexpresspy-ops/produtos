@@ -4,7 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { ResponsibilityNotice } from "@/components/shared/ResponsibilityNotice";
 import { WhatsappButtons } from "@/components/shared/WhatsappButtons";
 import { formatCurrency } from "@/lib/formatters/currency";
-import { formatOrderNumber } from "@/lib/formatters/order-number";
+import { formatOrderLabel } from "@/lib/formatters/order-number";
 import { getOrderItemsSubtotal, getOrderShippingFee } from "@/lib/cart";
 import type { Order } from "@/types/order";
 import type { WhatsappContact } from "@/lib/whatsapp";
@@ -28,8 +28,7 @@ export function OrderConfirmationView({
             <CheckCircle2 className="h-8 w-8" aria-hidden />
           </div>
           <h1 className="text-foreground text-3xl font-bold tracking-tight">
-            Pedido
-            {order.orderNumber ? ` ${formatOrderNumber(order.orderNumber)}` : ""} registrado
+            Pedido {formatOrderLabel(order)} registrado
           </h1>
           <p className="text-muted mt-2 text-sm">
             Revise seus dados e os itens abaixo. Em seguida, envie o pedido pelo

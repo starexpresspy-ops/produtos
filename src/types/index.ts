@@ -77,4 +77,6 @@ export interface StoreSettings {
   warrantyText?: string;
   exchangePolicy?: string;
   businessHours?: string;
+  maintenanceMode?: boolean;
+  maintenanceMessage?: string;
 }

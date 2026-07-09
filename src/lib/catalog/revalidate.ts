@@ -6,4 +6,6 @@ export function revalidateStorefront() {
   revalidateTag("products", "max");
   revalidatePath("/");
   revalidatePath("/produtos");
+  revalidatePath("/carrinho");
+  revalidatePath("/", "layout");
 }

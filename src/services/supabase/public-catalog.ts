@@ -1,10 +1,12 @@
 import { createPublicClient } from "@/lib/supabase/public";
 import { getPublicImageUrl } from "@/lib/supabase/mappers";
 import {
+  isMissingMaintenanceColumnsError,
   isMissingSecondaryColumnsError,
   mapStoreSettingsRow,
   STORE_SETTINGS_BASE_SELECT,
   STORE_SETTINGS_FULL_SELECT,
+  STORE_SETTINGS_WITH_SECONDARY_SELECT,
   type StoreSettingsRow,
 } from "@/lib/supabase/store-settings-shared";
 import { mapDbProduct } from "@/lib/supabase/product-mappers";
@@ -94,6 +96,14 @@ export async function fetchStoreSettings(): Promise<StoreSettings | null> {
     .select(STORE_SETTINGS_FULL_SELECT)
     .limit(1)
     .maybeSingle();
+
+  if (isMissingMaintenanceColumnsError(error?.message)) {
+    ({ data, error } = await supabase
+      .from("store_settings")
+      .select(STORE_SETTINGS_WITH_SECONDARY_SELECT)
+      .limit(1)
+      .maybeSingle());
+  }
 
   if (isMissingSecondaryColumnsError(error?.message)) {
     ({ data, error } = await supabase

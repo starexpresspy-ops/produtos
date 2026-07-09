@@ -1,9 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import {
+  isMissingMaintenanceColumnsError,
   isMissingSecondaryColumnsError,
   STORE_SETTINGS_BASE_SELECT,
   STORE_SETTINGS_FULL_SELECT,
+  STORE_SETTINGS_WITH_SECONDARY_SELECT,
   type StoreSettingsRow,
 } from "@/lib/supabase/store-settings-shared";
 
@@ -20,6 +22,14 @@ export async function getAdminStoreSettings(): Promise<AdminStoreSettingsRow | n
     .select(`id, ${STORE_SETTINGS_FULL_SELECT}`)
     .limit(1)
     .maybeSingle();
+
+  if (isMissingMaintenanceColumnsError(error?.message)) {
+    ({ data, error } = await supabase
+      .from("store_settings")
+      .select(`id, ${STORE_SETTINGS_WITH_SECONDARY_SELECT}`)
+      .limit(1)
+      .maybeSingle());
+  }
 
   if (isMissingSecondaryColumnsError(error?.message)) {
     ({ data, error } = await supabase

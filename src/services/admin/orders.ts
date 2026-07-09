@@ -1,6 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import {
+  isMissingOrderNumberColumnError,
+  ORDER_LIST_SELECT_BASE,
+  ORDER_LIST_SELECT_WITH_NUMBER,
+} from "@/lib/formatters/order-number";
 import type { Order, OrderItem, OrderStatus } from "@/types/order";
 
 function mapOrderItem(row: {
@@ -59,36 +64,61 @@ function mapOrder(
   };
 }
 
+type OrderRow = Parameters<typeof mapOrder>[0];
+
+async function fetchOrdersList(supabase: SupabaseClient) {
+  const primary = await supabase
+    .from("orders")
+    .select(ORDER_LIST_SELECT_WITH_NUMBER)
+    .order("created_at", { ascending: false });
+
+  if (!isMissingOrderNumberColumnError(primary.error?.message)) {
+    return primary;
+  }
+
+  return supabase
+    .from("orders")
+    .select(ORDER_LIST_SELECT_BASE)
+    .order("created_at", { ascending: false });
+}
+
+async function fetchOrderById(supabase: SupabaseClient, id: string) {
+  const primary = await supabase
+    .from("orders")
+    .select(ORDER_LIST_SELECT_WITH_NUMBER)
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!isMissingOrderNumberColumnError(primary.error?.message)) {
+    return primary;
+  }
+
+  return supabase
+    .from("orders")
+    .select(ORDER_LIST_SELECT_BASE)
+    .eq("id", id)
+    .maybeSingle();
+}
+
 export async function getAdminOrdersList(): Promise<Order[]> {
   if (!isSupabaseConfigured()) return [];
 
   const supabase = (await createClient()) as SupabaseClient;
-  const { data, error } = await supabase
-    .from("orders")
-    .select(
-      "id, customer_name, customer_phone, customer_address, status, total, whatsapp_message, created_at, confirmed_at",
-    )
-    .order("created_at", { ascending: false });
+  const { data, error } = await fetchOrdersList(supabase);
 
   if (error) {
     console.error("getAdminOrdersList:", error.message);
     return [];
   }
 
-  return (data ?? []).map((row) => mapOrder(row));
+  return (data ?? []).map((row) => mapOrder(row as OrderRow));
 }
 
 export async function getAdminOrderById(id: string): Promise<Order | null> {
   if (!isSupabaseConfigured()) return null;
 
   const supabase = (await createClient()) as SupabaseClient;
-  const { data: order, error } = await supabase
-    .from("orders")
-    .select(
-      "id, customer_name, customer_phone, customer_address, status, total, whatsapp_message, created_at, confirmed_at",
-    )
-    .eq("id", id)
-    .maybeSingle();
+  const { data: order, error } = await fetchOrderById(supabase, id);
 
   if (error || !order) {
     if (error) console.error("getAdminOrderById:", error.message);
@@ -104,7 +134,7 @@ export async function getAdminOrderById(id: string): Promise<Order | null> {
     .order("product_name");
 
   return mapOrder(
-    order,
+    order as OrderRow,
     (items ?? []).map(mapOrderItem),
   );
 }
