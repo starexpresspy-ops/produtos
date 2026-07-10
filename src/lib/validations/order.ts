@@ -8,6 +8,19 @@ const orderItemInputSchema = z.object({
 
 export const createOrderSchema = z.object({
   customerName: z.string().min(2, "Informe o nome completo."),
+  customerCpf: z
+    .string()
+    .transform((value) => value.replace(/\D/g, ""))
+    .refine((value) => value.length === 11, "Informe um CPF valido."),
+  customerEmail: z.string().email("Informe um e-mail valido."),
+  customerStreet: z.string().min(2, "Informe a rua."),
+  customerNumber: z.string().min(1, "Informe o numero."),
+  customerNeighborhood: z.string().min(2, "Informe o bairro."),
+  customerCity: z.string().min(2, "Informe a cidade."),
+  customerZip: z
+    .string()
+    .transform((value) => value.replace(/\D/g, ""))
+    .refine((value) => value.length === 8, "Informe um CEP valido."),
   customerPhone: z
     .string()
     .min(10, "Informe um telefone valido.")

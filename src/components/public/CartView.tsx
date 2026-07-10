@@ -7,50 +7,36 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { CART_CUSTOMER_STORAGE_KEY } from "@/constants/cart";
 import { getLineTotal, getMaxQuantity, getCartGrandTotal, getCartShippingFee } from "@/lib/cart";
+import {
+  EMPTY_CART_CUSTOMER,
+  isCartCustomerValid,
+  normalizeCartCustomer,
+} from "@/lib/cart-customer";
 import { formatCurrency } from "@/lib/formatters/currency";
 import { buildCartMessage } from "@/lib/whatsapp";
 import { CartCheckoutButtons } from "@/components/public/CartCheckoutButtons";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ResponsibilityNotice } from "@/components/shared/ResponsibilityNotice";
-import { FormField, FormTextarea } from "@/components/ui/FormField";
+import { FormField } from "@/components/ui/FormField";
 import type { CartCustomerInfo } from "@/types/cart";
 import { cn } from "@/lib/utils/cn";
 
-const EMPTY_CUSTOMER: CartCustomerInfo = {
-  name: "",
-  address: "",
-  phone: "",
-};
-
 function readStoredCustomer(): CartCustomerInfo {
-  if (typeof window === "undefined") return EMPTY_CUSTOMER;
+  if (typeof window === "undefined") return EMPTY_CART_CUSTOMER;
 
   try {
     const raw = window.localStorage.getItem(CART_CUSTOMER_STORAGE_KEY);
-    if (!raw) return EMPTY_CUSTOMER;
-    const parsed = JSON.parse(raw) as Partial<CartCustomerInfo>;
-    return {
-      name: parsed.name ?? "",
-      address: parsed.address ?? "",
-      phone: parsed.phone ?? "",
-    };
+    if (!raw) return EMPTY_CART_CUSTOMER;
+    return normalizeCartCustomer(JSON.parse(raw) as Partial<CartCustomerInfo>);
   } catch {
-    return EMPTY_CUSTOMER;
+    return EMPTY_CART_CUSTOMER;
   }
-}
-
-function isCustomerValid(customer: CartCustomerInfo) {
-  return (
-    customer.name.trim().length >= 2 &&
-    customer.address.trim().length >= 10 &&
-    customer.phone.replace(/\D/g, "").length >= 10
-  );
 }
 
 export function CartView() {
   const { items, total, updateQuantity, removeItem, clearCart, isReady } = useCart();
   const [customer, setCustomer] = useState<CartCustomerInfo>(() =>
-    typeof window !== "undefined" ? readStoredCustomer() : EMPTY_CUSTOMER,
+    typeof window !== "undefined" ? readStoredCustomer() : EMPTY_CART_CUSTOMER,
   );
 
   useEffect(() => {
@@ -66,7 +52,7 @@ export function CartView() {
 
   function handleCheckoutCompleted() {
     clearCart();
-    setCustomer(EMPTY_CUSTOMER);
+    setCustomer(EMPTY_CART_CUSTOMER);
     if (typeof window !== "undefined") {
       window.localStorage.removeItem(CART_CUSTOMER_STORAGE_KEY);
     }
@@ -99,7 +85,7 @@ export function CartView() {
     );
   }
 
-  const customerValid = isCustomerValid(customer);
+  const customerValid = isCartCustomerValid(customer);
   const message = buildCartMessage(items, customer);
 
   return (
@@ -212,25 +198,83 @@ export function CartView() {
 
       <div className="border-border bg-surface rounded-[var(--radius-card)] border p-6">
         <h2 className="text-foreground mb-4 text-lg font-semibold">Dados para entrega</h2>
-        <div className="grid gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           <FormField
-            label="Nome completo"
+            label="Nome"
             name="customerName"
             value={customer.name}
             onChange={(event) => updateCustomer("name", event.target.value)}
             placeholder="Seu nome completo"
             required
             autoComplete="name"
+            className="sm:col-span-2"
           />
-          <FormTextarea
-            label="Endereco completo"
-            name="customerAddress"
-            value={customer.address}
-            onChange={(event) => updateCustomer("address", event.target.value)}
-            placeholder="Rua, numero, bairro, cidade, estado, CEP"
-            rows={3}
+          <FormField
+            label="CPF"
+            name="customerCpf"
+            value={customer.cpf}
+            onChange={(event) => updateCustomer("cpf", event.target.value)}
+            placeholder="000.000.000-00"
+            inputMode="numeric"
             required
-            autoComplete="street-address"
+            autoComplete="off"
+          />
+          <FormField
+            label="Email"
+            name="customerEmail"
+            type="email"
+            value={customer.email}
+            onChange={(event) => updateCustomer("email", event.target.value)}
+            placeholder="seu@email.com"
+            required
+            autoComplete="email"
+          />
+          <FormField
+            label="Rua"
+            name="customerStreet"
+            value={customer.street}
+            onChange={(event) => updateCustomer("street", event.target.value)}
+            placeholder="Nome da rua"
+            required
+            autoComplete="address-line1"
+            className="sm:col-span-2"
+          />
+          <FormField
+            label="Numero"
+            name="customerNumber"
+            value={customer.number}
+            onChange={(event) => updateCustomer("number", event.target.value)}
+            placeholder="Nº"
+            required
+            autoComplete="address-line2"
+          />
+          <FormField
+            label="Bairro"
+            name="customerNeighborhood"
+            value={customer.neighborhood}
+            onChange={(event) => updateCustomer("neighborhood", event.target.value)}
+            placeholder="Bairro"
+            required
+            autoComplete="address-level3"
+          />
+          <FormField
+            label="Cidade"
+            name="customerCity"
+            value={customer.city}
+            onChange={(event) => updateCustomer("city", event.target.value)}
+            placeholder="Cidade"
+            required
+            autoComplete="address-level2"
+          />
+          <FormField
+            label="CEP"
+            name="customerZip"
+            value={customer.zip}
+            onChange={(event) => updateCustomer("zip", event.target.value)}
+            placeholder="00000-000"
+            inputMode="numeric"
+            required
+            autoComplete="postal-code"
           />
           <FormField
             label="Telefone / WhatsApp"
@@ -241,6 +285,7 @@ export function CartView() {
             placeholder="DDD + numero"
             required
             autoComplete="tel"
+            className="sm:col-span-2"
           />
         </div>
       </div>
@@ -278,7 +323,7 @@ export function CartView() {
 
         {!customerValid ? (
           <p className="text-muted mb-4 text-sm">
-            Preencha nome, endereco completo e telefone para finalizar o pedido.
+            Preencha nome, CPF, e-mail, endereco e telefone para finalizar o pedido.
           </p>
         ) : null}
 

@@ -1,0 +1,59 @@
+name,preco,marca,categoria,descricao_curta,stock_status,slug
+Testosterona Cipionato 200mg,160,Testoland/Gold,Hormonios,"200mg/10ml - Frasco injetavel. Fabricante: Testoland/Gold. Preco catalogo: USD 160",on_request,testosterona-cipionato-200mg
+Testosterona Enantato 250mg,160,Testonat/Gold,Hormonios,"250mg/10ml - Frasco injetavel. Fabricante: Testonat/Gold. Preco catalogo: USD 160",on_request,testosterona-enantato-250mg
+Testosterona Propionato 100mg,160,Landergold,Hormonios,"100mg/10ml - Frasco injetavel. Fabricante: Landergold. Preco catalogo: USD 160",on_request,testosterona-propionato-100mg
+Trenbolona Acetato 100mg,160,Landergold,Hormonios,"100mg/10ml - Frasco injetavel. Fabricante: Landergold. Preco catalogo: USD 160",on_request,trenbolona-acetato-100mg
+Trenbolona Enantato 200mg,160,Landergold,Hormonios,"200mg/10ml - Frasco injetavel. Fabricante: Landergold. Preco catalogo: USD 160",on_request,trenbolona-enantato-200mg
+Nandrolona Fenilpropionato 100mg,160,NPP/Gold,Hormonios,"100mg/10ml - Frasco injetavel. Fabricante: NPP/Gold. Preco catalogo: USD 160",on_request,nandrolona-fenilpropionato-100mg
+Nandrolona Decanoato 200mg,160,Decaland/Gold,Hormonios,"200mg/10ml - Frasco injetavel. Fabricante: Decaland/Gold. Preco catalogo: USD 160",on_request,nandrolona-decanoato-200mg
+Boldenona 250mg,160,Landergold,Hormonios,"250mg/10ml - Frasco injetavel. Fabricante: Landergold. Preco catalogo: USD 160",on_request,boldenona-250mg
+Masteron 100mg,160,Drostanolona/Gold,Hormonios,"100mg/10ml - Frasco injetavel. Fabricante: Drostanolona/Gold. Preco catalogo: USD 160",on_request,masteron-100mg
+Nandrolona Simples Fenilpropionato,195,Landerlan,Hormonios,"100 comp. Fabricante: Landerlan. Preco catalogo: USD 195",on_request,nandrolona-simples-fenilpropionato
+Nandrolona Decanoato 50mg,195,Landerlan,Hormonios,"50mg / 50 comp. Fabricante: Landerlan. Preco catalogo: USD 195",on_request,nandrolona-decanoato-50mg-comp
+HCG 5000UI,195,Gonadotrofina/Gold,Hormonios,"5000UI / 1 frasco. Fabricante: Gonadotrofina/Gold. Preco catalogo: USD 195",on_request,hcg-5000ui
+Anastrozol 10mg,110,Landerlan,Hormonios,"10mg / 100 comp. Fabricante: Landerlan. Preco catalogo: USD 110",on_request,anastrozol-10mg-100comp
+Anastrozol 50mg 15ml,110,Landerlan,Hormonios,"50mg / 15ml. Fabricante: Landerlan. Preco catalogo: USD 110",on_request,anastrozol-50mg-15ml
+Anastrozol 50mg 30ml,110,Landerlan,Hormonios,"50mg / 30ml. Fabricante: Landerlan. Preco catalogo: USD 110",on_request,anastrozol-50mg-30ml
+Clomifeno Clomogem 50mg,110,Oxitoland/Landerlan,Hormonios,"50mg / 20 comp. Fabricante: Oxitoland/Landerlan. Preco catalogo: USD 110",on_request,clomifeno-clomogem-50mg
+Retatrutida 60mg Biogenises,700,Biogenises,Retatrutida,"60 mg - Frasco. Fabricante: Biogenises",on_request,retatrutida-60mg-biogenises
+Retatrutida 120mg Veltrane,799,Veltrane,Retatrutida,"120 mg - Frasco. Fabricante: Veltrane",on_request,retatrutida-120mg-veltrane
+Retatrutida 60mg ZPHC Pen,1550,ZPHC,Retatrutida,"60 mg - Caneta (pen). Fabricante: ZPHC",on_request,retatrutida-60mg-zphc-pen
+Retatrutida 48mg TNL Pen,999,TNL,Retatrutida,"48 mg - Caneta (pen). Fabricante: TNL",on_request,retatrutida-48mg-tnl-pen
+Retatrutida 40mg Synedica Pen,950,Synedica,Retatrutida,"40 mg - Caneta (pen). Fabricante: Synedica",on_request,retatrutida-40mg-synedica-pen
+Retatrutida 40mg Thera Genetics Pen,780,Thera Genetics,Retatrutida,"40 mg - Caneta (pen). Fabricante: Thera Genetics",on_request,retatrutida-40mg-thera-genetics-pen
+AOD-9604 10mg,602.55,,Peptideos,"10 mg - 1 frasco",on_request,aod-9604-10mg
+BPC-157 10mg,499.79,,Peptideos,"10 mg - 1 frasco",on_request,bpc-157-10mg
+Cagrilintide 5mg,534.04,,Peptideos,"5 mg - 1 vial",on_request,cagrilintide-5mg
+CJC 1295 + Ipamorelin,602.55,,Peptideos,"Blend - 1 frasco",on_request,cjc-1295-ipamorelin
+Epithalon 50mg,602.55,,Peptideos,"50 mg - 1 frasco",on_request,epithalon-50mg
+GHK-CU 100mg,499.79,,Peptideos,"100 mg - 1 frasco",on_request,ghk-cu-100mg
+GHK-CU 100mg + Agua,534.04,,Peptideos,"100 mg com agua - 1 frasco",on_request,ghk-cu-100mg-agua
+Glow 70mg,602.55,,Peptideos,"70 mg - 1 frasco",on_request,glow-70mg
+HGH Frag 176 10mg,568.30,,Peptideos,"10 mg - 1 frasco",on_request,hgh-frag-176-10mg
+Ipamorelin 10mg,534.04,,Peptideos,"10 mg - 1 frasco",on_request,ipamorelin-10mg
+Kisspeptin 10mg,534.04,,Peptideos,"10 mg - 1 frasco",on_request,kisspeptin-10mg
+Klow 80mg,671.06,,Peptideos,"80 mg - 1 frasco",on_request,klow-80mg
+MOTS-C 10mg,534.04,,Peptideos,"10 mg - 1 frasco",on_request,mots-c-10mg
+MOTS-C 40mg,635.81,,Peptideos,"40 mg - 1 frasco",on_request,mots-c-40mg
+NAD+ 1000mg,671.06,,Peptideos,"1000 mg - 1 frasco",on_request,nad-1000mg
+Oxitocin 10mg,534.04,,Peptideos,"10 mg - 1 frasco",on_request,oxitocin-10mg
+PT-141 10mg,499.79,,Peptideos,"10 mg - 1 frasco",on_request,pt-141-10mg
+Retatrutide 10mg,465.53,,Peptideos,"10 mg - 1 frasco",on_request,retatrutide-10mg
+Retatrutide 20mg,534.04,,Peptideos,"20 mg - 1 frasco",on_request,retatrutide-20mg
+Retatrutide 30mg,602.55,,Peptideos,"30 mg - 1 frasco",on_request,retatrutide-30mg
+Retatrutide 40mg,671.06,,Peptideos,"40 mg - 1 frasco",on_request,retatrutide-40mg
+Selank 10mg,602.55,,Peptideos,"10 mg - 1 frasco",on_request,selank-10mg
+Semax 10mg,602.55,,Peptideos,"10 mg - 1 vial",on_request,semax-10mg
+Sermorelin 10mg,534.04,,Peptideos,"10 mg - 1 frasco",on_request,sermorelin-10mg
+SS-31 50mg,635.81,,Peptideos,"50 mg - 1 frasco",on_request,ss-31-50mg
+TB500 10mg,499.79,,Peptideos,"10 mg - 1 frasco",on_request,tb500-10mg
+Tesamorelin 10mg,602.55,,Peptideos,"10 mg - 1 frasco",on_request,tesamorelin-10mg
+Tirzepatide 120mg,876.59,,Peptideos,"120 mg - 1 frasco",on_request,tirzepatide-120mg
+Tirzepatide 60mg,635.81,,Peptideos,"60 mg - 1 vial",on_request,tirzepatide-60mg
+Wolverine Blend 20mg,602.55,,Peptideos,"20 mg - 1 frasco",on_request,wolverine-blend-20mg
+TG 15mg 4 ampolas,730,,Emagrecedores,"15 mg - 4 ampolas. Preco catalogo: USD 730",on_request,tg-15-4-ampolas
+Lipoless 15mg 4 ampolas,650,,Emagrecedores,"15 mg - 4 ampolas. Preco catalogo: USD 650",on_request,lipoless-15-4-ampolas
+Lipoland ampola unica,680,,Emagrecedores,"Ampola unica. Preco catalogo: USD 680",on_request,lipoland-ampola-unica
+Lipoless ampola unica,600,,Emagrecedores,"Ampola unica. Preco catalogo: USD 600",on_request,lipoless-ampola-unica
+Tirzec 4 ampolas,700,,Emagrecedores,"4 ampolas. Preco catalogo: USD 700",on_request,tirzec-4-ampolas
+Tirzec 15mg ampola unica,650,,Emagrecedores,"15 mg - Ampola unica. Preco catalogo: USD 650",on_request,tirzec-15mg-ampola-unica

@@ -25,10 +25,14 @@ export function mapProfile(row: ProfileRow): Profile {
 export function getPublicImageUrl(
   bucket: string,
   path: string | null | undefined,
+  version?: string | null,
 ): string | undefined {
   if (!path) return undefined;
   if (path.startsWith("http")) return path;
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!base) return undefined;
-  return `${base}/storage/v1/object/public/${bucket}/${path}`;
+  const url = `${base}/storage/v1/object/public/${bucket}/${path}`;
+  if (!version) return url;
+  const sep = url.includes("?") ? "&" : "?";
+  return `${url}${sep}v=${encodeURIComponent(version)}`;
 }

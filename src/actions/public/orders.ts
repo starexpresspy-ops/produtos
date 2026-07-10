@@ -7,6 +7,7 @@ import {
   createPublicOrder,
   OrderCreationError,
 } from "@/lib/orders/create-public-order";
+import { formatCustomerDetails } from "@/lib/cart-customer";
 import type { CartCustomerInfo, CartItem } from "@/types/cart";
 import type { ActionResult } from "@/types/actions";
 
@@ -29,10 +30,19 @@ export async function createOrderFromCart(input: {
     };
   }
 
+  const customerAddress = formatCustomerDetails(input.customer);
+
   const parsed = createOrderSchema.safeParse({
     customerName: input.customer.name,
+    customerCpf: input.customer.cpf,
+    customerEmail: input.customer.email,
+    customerStreet: input.customer.street,
+    customerNumber: input.customer.number,
+    customerNeighborhood: input.customer.neighborhood,
+    customerCity: input.customer.city,
+    customerZip: input.customer.zip,
     customerPhone: input.customer.phone,
-    customerAddress: input.customer.address,
+    customerAddress,
     whatsappMessage: input.whatsappMessage,
     items: input.items.map((item) => ({
       productId: item.productId,

@@ -73,7 +73,7 @@ export default async function AdminOrderDetailPage({
               <dd className="text-foreground font-medium">{order.customerPhone}</dd>
             </div>
             <div>
-              <dt className="text-muted">Endereco</dt>
+              <dt className="text-muted">Dados do cliente</dt>
               <dd className="text-foreground whitespace-pre-line">{order.customerAddress}</dd>
             </div>
           </dl>

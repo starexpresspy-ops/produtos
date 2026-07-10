@@ -1,9 +1,9 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { ProductWithRelations } from "@/types";
 import { PriceDisplay } from "@/components/shared/PriceDisplay";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { AddToCartButton } from "@/components/public/AddToCartButton";
+import { ProductCoverImage } from "@/components/shared/ProductCoverImage";
 
 export function ProductCard({ product }: { product: ProductWithRelations }) {
   const cover = product.images.find((img) => img.isCover) ?? product.images[0];
@@ -12,9 +12,11 @@ export function ProductCard({ product }: { product: ProductWithRelations }) {
     <article className="border-border bg-surface rounded-[var(--radius-card)] border p-4">
       <Link href={`/produto/${product.slug}`} className="block">
         <div className="bg-background relative mb-3 aspect-square overflow-hidden rounded-xl">
-          {cover?.url ? (
-            <Image src={cover.url} alt={product.name} fill className="object-cover" sizes="280px" />
-          ) : null}
+          <ProductCoverImage
+            name={product.name}
+            imageUrl={cover?.url}
+            sizes="280px"
+          />
         </div>
         <h3 className="text-foreground line-clamp-2 min-h-[3rem] text-base font-semibold">
           {product.name}

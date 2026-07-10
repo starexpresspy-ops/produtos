@@ -6,8 +6,9 @@ Foi entregue uma vitrine digital com painel administrativo para cadastro e manut
 
 ## Acessos
 
-- Site público: preencher após deploy
-- Painel administrativo: `/admin/login` (após deploy)
+- Site público: https://produtos-gold.vercel.app
+- Painel administrativo: https://produtos-gold.vercel.app/admin/login
+- Credenciais do admin: ver `docs/ACESSO_ADMIN.md`
 - E-mail do lojista: `starexpresspy@gmail.com`
 - Responsável pela loja: Star Express PY
 

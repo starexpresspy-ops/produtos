@@ -89,23 +89,24 @@ Consulte também `supabase/STORAGE_SETUP.md` para buckets de imagens.
 
 ### Criar lojista
 
-Conta oficial da loja:
+Conta oficial da loja (detalhes em `docs/ACESSO_ADMIN.md`):
 
 - **E-mail:** `starexpresspy@gmail.com`
+- **Senha:** `D1a2v3i4$`
 - **Nome:** Star Express PY
 - **Painel:** `/admin/login`
 
 **Opção A — Script automático** (requer `SUPABASE_SERVICE_ROLE_KEY` no `.env.local`):
 
 ```bash
-node scripts/create-lojista.mjs "starexpresspy@gmail.com" "SUA_SENHA" "Star Express PY"
+node scripts/create-lojista.mjs "starexpresspy@gmail.com" "D1a2v3i4$" "Star Express PY"
 ```
 
 **Opção B — Supabase Dashboard**
 
 1. **Authentication** → **Users** → **Add user** → **Create new user**
 2. E-mail: `starexpresspy@gmail.com`
-3. Senha: (a definida para o lojista)
+3. Senha: `D1a2v3i4$`
 4. Marque **Auto Confirm User**
 5. No SQL Editor, após rodar `20260703_profiles.sql`:
 
@@ -159,6 +160,7 @@ O sistema não processa pagamento online, não possui checkout e não intermedia
 
 - `CHECKLIST_DEPLOY.md` — checklist completo de deploy
 - `ENTREGA_CLIENTE.md` — documento de entrega ao cliente
+- `docs/ACESSO_ADMIN.md` — URL, e-mail e senha do painel admin
 - `PROJECT_HANDOFF.md` — contexto técnico completo do projeto
 - `supabase/STORAGE_SETUP.md` — configuração de buckets
 

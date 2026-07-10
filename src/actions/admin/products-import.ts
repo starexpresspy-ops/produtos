@@ -191,15 +191,23 @@ export async function importProductsFromCsv(
       continue;
     }
 
+    const categoryFromRow =
+      /retatrutid|tirzepatid/i.test(name)
+        ? { category: "Emagrecedores", categoria: "Emagrecedores" }
+        : row;
+
     const categoryId = await resolveCategoryId(
       supabase,
-      row,
+      categoryFromRow,
       categoryMap,
       details,
       i + 2,
     );
     if (
-      (row.category || row.categoria || row.category_slug || row.categoria_slug) &&
+      (categoryFromRow.category ||
+        categoryFromRow.categoria ||
+        categoryFromRow.category_slug ||
+        categoryFromRow.categoria_slug) &&
       !categoryId
     ) {
       skipped++;

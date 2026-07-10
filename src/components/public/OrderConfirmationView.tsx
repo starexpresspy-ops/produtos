@@ -42,7 +42,7 @@ export function OrderConfirmationView({
           </h2>
           <dl className="grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
-              <dt className="text-muted text-sm">Nome completo</dt>
+              <dt className="text-muted text-sm">Nome</dt>
               <dd className="text-foreground mt-1 font-medium">{order.customerName}</dd>
             </div>
             <div>
@@ -50,7 +50,7 @@ export function OrderConfirmationView({
               <dd className="text-foreground mt-1 font-medium">{order.customerPhone}</dd>
             </div>
             <div className="sm:col-span-2">
-              <dt className="text-muted text-sm">Endereco completo</dt>
+              <dt className="text-muted text-sm">Dados do cliente</dt>
               <dd className="text-foreground mt-1 whitespace-pre-line font-medium">
                 {order.customerAddress}
               </dd>

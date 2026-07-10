@@ -204,11 +204,10 @@ NEXT_PUBLIC_WHATSAPP_NUMBER=5545999999999
 
 `isSupabaseConfigured()` retorna `true` apenas com URL + anon key preenchidos.
 
-**Credenciais de teste (lojista):**
+**Credenciais do lojista (produção):** ver `docs/ACESSO_ADMIN.md`
 
 - E-mail: `starexpresspy@gmail.com`
-- Senha: `1q2w3e4r5t`
-- Painel: http://localhost:3000/admin/login
+- Painel: https://produtos-gold.vercel.app/admin/login
 
 ---
 

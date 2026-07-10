@@ -1,4 +1,5 @@
 import { formatCurrency } from "@/lib/formatters/currency";
+import { formatCustomerDetails, isCartCustomerValid } from "@/lib/cart-customer";
 import type { CartCustomerInfo, CartItem } from "@/types/cart";
 import type { ProductWithRelations, StoreSettings } from "@/types";
 import { getLineTotal, getCartTotal, getCartShippingFee, getCartGrandTotal } from "@/lib/cart";
@@ -91,11 +92,9 @@ export function buildCartMessage(
     "",
   ];
 
-  if (customer?.name && customer.address && customer.phone) {
+  if (customer && isCartCustomerValid(customer)) {
     lines.push("Dados do cliente:");
-    lines.push(`Nome: ${customer.name}`);
-    lines.push(`Endereco: ${customer.address}`);
-    lines.push(`Telefone: ${customer.phone}`);
+    lines.push(formatCustomerDetails(customer));
     lines.push("");
   }
 

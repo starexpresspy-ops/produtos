@@ -15,6 +15,12 @@ export interface CartItem {
 
 export interface CartCustomerInfo {
   name: string;
-  address: string;
+  cpf: string;
+  email: string;
+  street: string;
+  number: string;
+  neighborhood: string;
+  city: string;
+  zip: string;
   phone: string;
 }

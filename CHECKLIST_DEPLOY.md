@@ -22,7 +22,7 @@
   - [ ] `20260703_product_audit.sql`
   - [ ] `20260703_rls.sql`
   - [ ] `20260703_storage.sql`
-- [ ] Criar usuário lojista em Authentication
+- [ ] Criar usuário lojista em Authentication (ver `docs/ACESSO_ADMIN.md`)
 - [ ] Criar registro em `profiles` com role `lojista` e `active = true`
 - [ ] Criar bucket `product-images`
 - [ ] Criar bucket `store-assets`

@@ -47,9 +47,57 @@ export async function uploadProductImageFile(
 }
 
 export async function uploadProductImageFromUrl(
-  _supabase: SupabaseClient,
-  _productId: string,
-  _url: string,
+  supabase: SupabaseClient,
+  productId: string,
+  url: string,
 ): Promise<{ error?: string }> {
+  const { count } = await supabase
+    .from("product_images")
+    .select("id", { count: "exact", head: true })
+    .eq("product_id", productId);
+  const imageCount = count ?? 0;
+  if (imageCount >= MAX_PRODUCT_IMAGES) {
+    return { error: `Limite de ${MAX_PRODUCT_IMAGES} imagens atingido.` };
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      headers: { "User-Agent": "StarExpressProductImport/1.0" },
+    });
+  } catch {
+    return { error: "Nao foi possivel baixar a imagem." };
+  }
+
+  if (!response.ok) {
+    return { error: `Download da imagem falhou (${response.status}).` };
+  }
+
+  const contentType = response.headers.get("content-type") ?? "image/jpeg";
+  if (!ALLOWED_TYPES.includes(contentType)) {
+    return { error: `Formato invalido (${contentType}). Use JPEG, PNG ou WebP.` };
+  }
+
+  const buffer = Buffer.from(await response.arrayBuffer());
+  if (buffer.byteLength > MAX_BYTES) {
+    return { error: "Imagem muito grande. Maximo 1 MB." };
+  }
+
+  const ext = contentType.split("/")[1]?.replace("jpeg", "jpg") ?? "jpg";
+  const storagePath = `${productId}/${crypto.randomUUID()}.${ext}`;
+  const { error: uploadError } = await supabase.storage
+    .from("product-images")
+    .upload(storagePath, buffer, { upsert: false, contentType });
+
+  if (uploadError) return { error: uploadError.message };
+
+  const { error: insertError } = await supabase.from("product_images").insert({
+    product_id: productId,
+    storage_path: storagePath,
+    sort_order: imageCount,
+    is_cover: imageCount === 0,
+  });
+
+  if (insertError) return { error: insertError.message };
   return {};
 }

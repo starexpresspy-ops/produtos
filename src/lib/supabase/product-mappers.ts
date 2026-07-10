@@ -6,7 +6,9 @@ export const MAX_PRODUCT_IMAGES = 8;
 export function mapDbProduct(row: any): ProductWithRelations {
   const images = (row.product_images ?? []).map((img: any) => ({
     id: img.id,
-    url: getPublicImageUrl("product-images", img.storage_path) ?? "",
+    url:
+      getPublicImageUrl("product-images", img.storage_path, row.updated_at) ??
+      "",
     alt: img.alt_text ?? undefined,
     sortOrder: img.sort_order ?? 0,
     isCover: img.is_cover ?? false,
